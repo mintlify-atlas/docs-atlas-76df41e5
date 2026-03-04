@@ -1,0 +1,70 @@
+---
+title: Introduction
+description: A Dart library for validating and formatting Zimbabwe-specific patterns including mobile numbers, national IDs, passports, and more.
+---
+
+LocalRegex is a regular expression library that provides comprehensive validation and formatting for Zimbabwe-specific patterns. Whether you're building a Flutter app or a Dart backend service, LocalRegex makes it easy to validate mobile numbers, national IDs, passports, number plates, and other common data patterns used in Zimbabwe.
+
+## What problems does LocalRegex solve?
+
+When building applications for Zimbabwe, you often need to:
+
+- Validate mobile numbers from different network providers (Econet, NetOne, Telecel)
+- Check if national IDs are in the correct format
+- Verify passport numbers, driver's licenses, and vehicle number plates
+- Format phone numbers into different formats (with or without country codes)
+- Validate VoIP numbers from various providers
+- Ensure password strength meets security requirements
+
+LocalRegex solves all these problems with a simple, consistent API.
+
+## Key features
+
+- **Mobile number validation**: Supports all major Zimbabwean network providers (Econet, NetOne, Telecel)
+- **VoIP number validation**: Validates numbers from Africom, Dandemutande, Liquid, Powertel, Telco, Telone, and Zarnet
+- **Identity verification**: Validates national IDs, passports, driver's licenses, and vehicle number plates
+- **Phone number formatting**: Convert numbers between different formats (regular, country code, country code with +)
+- **National ID formatting**: Format IDs to match official documents (11-223344 K 55)
+- **Cross-platform**: Works on Android, iOS, Web, and Desktop (Linux, Windows, macOS)
+- **No initialization required**: All methods are static - just import and use
+- **Student ID validation**: Supports tertiary institutions like HIT, Telone, UZ, and MSU
+- **Additional utilities**: Email, URL, password, date, and IP address validation
+
+## Quick example
+
+Here's a quick example of validating a Zimbabwean mobile number:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void main() {
+  // Validate a mobile number
+  final isValid = LocalRegex.isZimMobile('0777123456');
+  print(isValid); // true
+  
+  // Check specific network provider
+  final isEconet = LocalRegex.isEconet('0777123456');
+  print(isEconet); // true
+  
+  // Validate a national ID
+  final isValidID = LocalRegex.isZimID('63-123456A78');
+  print(isValidID); // true
+  
+  // Format a phone number
+  final formatted = '0777123456'.formatNumber(
+    formatType: FormatType.countryCodePlus,
+  );
+  print(formatted); // +263777123456
+}
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Add LocalRegex to your Dart or Flutter project
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get started with basic validation and formatting
+  </Card>
+</CardGroup>

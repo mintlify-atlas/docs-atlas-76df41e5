@@ -1,0 +1,385 @@
+---
+title: "Student ID Validation"
+description: "Validate student ID numbers for Zimbabwe educational institutions"
+---
+
+## Overview
+
+LocalRegex provides validation for student ID numbers from major Zimbabwe educational institutions. The library includes support for universities and technical colleges with institution-specific ID formats.
+
+## LocalSchools Enum
+
+The `LocalSchools` enum defines the supported educational institutions:
+
+```dart
+enum LocalSchools {
+  /// Harare Institute of Technology
+  hit,
+
+  /// Telone Centre for Learning
+  telone,
+
+  /// University of Zimbabwe
+  uz,
+
+  /// Midlands State University
+  msu
+}
+```
+
+---
+
+## isStudent() Extension Method
+
+The `isStudent()` method is an extension on the `LocalSchools` enum that validates student IDs for the selected institution.
+
+<ParamField path="studentId" type="String" required>
+  The student ID number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the ID matches the institution's format, `false` otherwise
+
+### Usage Pattern
+
+```dart
+LocalSchools.institutionName.isStudent(studentId)
+```
+
+---
+
+## Supported Institutions
+
+### Harare Institute of Technology (HIT)
+
+<ParamField path="LocalSchools.hit" type="enum">
+  Validates HIT student IDs
+</ParamField>
+
+**Pattern:** `H[0-9]{6}[A-Z]$`
+
+**Format Structure:**
+- Starts with letter `H`
+- Followed by 6 digits
+- Ends with 1 uppercase letter
+
+**Total Length:** 8 characters
+
+<CodeGroup>
+```dart Valid Examples
+LocalSchools.hit.isStudent('H180202M');  // true
+LocalSchools.hit.isStudent('H210456K');  // true
+LocalSchools.hit.isStudent('H195678A');  // true
+```
+
+```dart Invalid Examples
+LocalSchools.hit.isStudent('H18020M');   // false (only 5 digits)
+LocalSchools.hit.isStudent('h180202M');  // false (lowercase 'h')
+LocalSchools.hit.isStudent('H180202m');  // false (lowercase letter)
+LocalSchools.hit.isStudent('H1802023M'); // false (7 digits)
+LocalSchools.hit.isStudent('180202M');   // false (missing 'H')
+```
+</CodeGroup>
+
+<Note>
+  HIT is a public technical college in Harare, Zimbabwe, offering technology and engineering programs.
+</Note>
+
+---
+
+### Telone Centre for Learning
+
+<ParamField path="LocalSchools.telone" type="enum">
+  Validates Telone Centre for Learning student IDs
+</ParamField>
+
+**Pattern:** `T[0-9]{7}[A-Z]$`
+
+**Format Structure:**
+- Starts with letter `T`
+- Followed by 7 digits
+- Ends with 1 uppercase letter
+
+**Total Length:** 9 characters
+
+<CodeGroup>
+```dart Valid Examples
+LocalSchools.telone.isStudent('T2216313T');  // true
+LocalSchools.telone.isStudent('T1234567A');  // true
+LocalSchools.telone.isStudent('T9876543Z');  // true
+```
+
+```dart Invalid Examples
+LocalSchools.telone.isStudent('T221631T');   // false (only 6 digits)
+LocalSchools.telone.isStudent('t2216313T');  // false (lowercase 't')
+LocalSchools.telone.isStudent('T2216313t');  // false (lowercase letter)
+LocalSchools.telone.isStudent('T22163138T'); // false (8 digits)
+LocalSchools.telone.isStudent('2216313T');   // false (missing 'T')
+```
+</CodeGroup>
+
+<Note>
+  Telone Centre for Learning is an educational institution associated with TelOne, Zimbabwe's telecommunications company.
+</Note>
+
+---
+
+### University of Zimbabwe (UZ)
+
+<ParamField path="LocalSchools.uz" type="enum">
+  Validates University of Zimbabwe student IDs
+</ParamField>
+
+**Pattern:** `R[0-9]{6}[A-Z]$`
+
+**Format Structure:**
+- Starts with letter `R`
+- Followed by 6 digits
+- Ends with 1 uppercase letter
+
+**Total Length:** 8 characters
+
+<CodeGroup>
+```dart Valid Examples
+LocalSchools.uz.isStudent('R123456A');  // true
+LocalSchools.uz.isStudent('R210987B');  // true
+LocalSchools.uz.isStudent('R195432M');  // true
+```
+
+```dart Invalid Examples
+LocalSchools.uz.isStudent('R12345A');   // false (only 5 digits)
+LocalSchools.uz.isStudent('r123456A');  // false (lowercase 'r')
+LocalSchools.uz.isStudent('R123456a');  // false (lowercase letter)
+LocalSchools.uz.isStudent('R1234567A'); // false (7 digits)
+LocalSchools.uz.isStudent('123456A');   // false (missing 'R')
+```
+</CodeGroup>
+
+<Note>
+  The University of Zimbabwe (UZ) is the oldest and largest university in Zimbabwe, established in 1952.
+</Note>
+
+---
+
+### Midlands State University (MSU)
+
+<ParamField path="LocalSchools.msu" type="enum">
+  Validates Midlands State University student IDs
+</ParamField>
+
+**Pattern:** `R[0-9]{7}[A-Z]$`
+
+**Format Structure:**
+- Starts with letter `R`
+- Followed by 7 digits
+- Ends with 1 uppercase letter
+
+**Total Length:** 9 characters
+
+<CodeGroup>
+```dart Valid Examples
+LocalSchools.msu.isStudent('R1234567A');  // true
+LocalSchools.msu.isStudent('R2109876B');  // true
+LocalSchools.msu.isStudent('R9876543Z');  // true
+```
+
+```dart Invalid Examples
+LocalSchools.msu.isStudent('R123456A');   // false (only 6 digits)
+LocalSchools.msu.isStudent('r1234567A');  // false (lowercase 'r')
+LocalSchools.msu.isStudent('R1234567a');  // false (lowercase letter)
+LocalSchools.msu.isStudent('R12345678A'); // false (8 digits)
+LocalSchools.msu.isStudent('1234567A');   // false (missing 'R')
+```
+</CodeGroup>
+
+<Note>
+  Midlands State University (MSU) is located in Gweru, Zimbabwe, and was established in 1999.
+</Note>
+
+---
+
+## Format Comparison
+
+<CardGroup cols={2}>
+  <Card title="HIT" icon="h">
+    **Pattern:** `H123456A`
+    
+    H + 6 digits + letter (8 chars)
+  </Card>
+  
+  <Card title="Telone" icon="t">
+    **Pattern:** `T1234567A`
+    
+    T + 7 digits + letter (9 chars)
+  </Card>
+  
+  <Card title="UZ" icon="r">
+    **Pattern:** `R123456A`
+    
+    R + 6 digits + letter (8 chars)
+  </Card>
+  
+  <Card title="MSU" icon="r">
+    **Pattern:** `R1234567A`
+    
+    R + 7 digits + letter (9 chars)
+  </Card>
+</CardGroup>
+
+---
+
+## Pattern Summary Table
+
+| Institution | Prefix | Digits | Format | Example |
+|------------|--------|---------|--------|----------|
+| HIT | H | 6 | `H[0-9]{6}[A-Z]` | H180202M |
+| Telone | T | 7 | `T[0-9]{7}[A-Z]` | T2216313T |
+| UZ | R | 6 | `R[0-9]{6}[A-Z]` | R123456A |
+| MSU | R | 7 | `R[0-9]{7}[A-Z]` | R1234567A |
+
+<Warning>
+  **UZ vs MSU:** Both universities use the prefix `R`, but UZ uses 6 digits while MSU uses 7 digits. Make sure to validate against the correct institution.
+</Warning>
+
+---
+
+## Complete Example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void validateStudentID(String studentId) {
+  // Check each institution
+  if (LocalSchools.hit.isStudent(studentId)) {
+    print('Valid HIT student ID');
+  } else if (LocalSchools.telone.isStudent(studentId)) {
+    print('Valid Telone Centre for Learning student ID');
+  } else if (LocalSchools.uz.isStudent(studentId)) {
+    print('Valid University of Zimbabwe student ID');
+  } else if (LocalSchools.msu.isStudent(studentId)) {
+    print('Valid Midlands State University student ID');
+  } else {
+    print('Invalid student ID format');
+  }
+}
+
+// Example usage
+void main() {
+  validateStudentID('H180202M');    // Valid HIT student ID
+  validateStudentID('T2216313T');   // Valid Telone student ID
+  validateStudentID('R123456A');    // Valid UZ student ID
+  validateStudentID('R1234567B');   // Valid MSU student ID
+  validateStudentID('X123456A');    // Invalid student ID format
+}
+```
+
+---
+
+## Validation by Institution
+
+<Tabs>
+  <Tab title="HIT">
+    ```dart
+    // Harare Institute of Technology
+    final hitId = 'H180202M';
+    
+    if (LocalSchools.hit.isStudent(hitId)) {
+      print('Valid HIT student');
+    }
+    ```
+    
+    - Prefix: **H**
+    - Length: **8 characters**
+    - Example: `H180202M`
+  </Tab>
+  
+  <Tab title="Telone">
+    ```dart
+    // Telone Centre for Learning
+    final teloneId = 'T2216313T';
+    
+    if (LocalSchools.telone.isStudent(teloneId)) {
+      print('Valid Telone student');
+    }
+    ```
+    
+    - Prefix: **T**
+    - Length: **9 characters**
+    - Example: `T2216313T`
+  </Tab>
+  
+  <Tab title="UZ">
+    ```dart
+    // University of Zimbabwe
+    final uzId = 'R123456A';
+    
+    if (LocalSchools.uz.isStudent(uzId)) {
+      print('Valid UZ student');
+    }
+    ```
+    
+    - Prefix: **R**
+    - Length: **8 characters**
+    - Example: `R123456A`
+  </Tab>
+  
+  <Tab title="MSU">
+    ```dart
+    // Midlands State University
+    final msuId = 'R1234567B';
+    
+    if (LocalSchools.msu.isStudent(msuId)) {
+      print('Valid MSU student');
+    }
+    ```
+    
+    - Prefix: **R**
+    - Length: **9 characters**
+    - Example: `R1234567B`
+  </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+<Note>
+  **Case Sensitivity**: All student ID patterns require uppercase letters. Consider normalizing input to uppercase before validation:
+  
+  ```dart
+  final normalizedId = studentId.toUpperCase();
+  if (LocalSchools.hit.isStudent(normalizedId)) {
+    // Valid
+  }
+  ```
+</Note>
+
+<Note>
+  **Institution-Specific Validation**: Always validate against the specific institution rather than trying generic pattern matching, as multiple institutions may share similar formats.
+</Note>
+
+<Warning>
+  **Format Only**: These validators only verify that the ID matches the institution's format. They do not verify if the student is actually enrolled or if the ID is currently active.
+</Warning>
+
+---
+
+## Distinguishing Between UZ and MSU
+
+Since both UZ and MSU use the `R` prefix, you need to check the digit count:
+
+```dart
+void identifyRPrefixStudent(String studentId) {
+  if (studentId.startsWith('R')) {
+    if (LocalSchools.uz.isStudent(studentId)) {
+      print('University of Zimbabwe (6 digits)');
+    } else if (LocalSchools.msu.isStudent(studentId)) {
+      print('Midlands State University (7 digits)');
+    } else {
+      print('Invalid R-prefix student ID');
+    }
+  }
+}
+
+identifyRPrefixStudent('R123456A');   // UZ (6 digits)
+identifyRPrefixStudent('R1234567B');  // MSU (7 digits)
+```

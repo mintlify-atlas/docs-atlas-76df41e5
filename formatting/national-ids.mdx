@@ -1,0 +1,276 @@
+---
+title: National ID Formatting
+description: Format Zimbabwean national IDs using the formatID() extension method
+---
+
+## Overview
+
+LocalRegex provides a `formatID()` extension method on `String` that formats Zimbabwean national identification numbers into the official format used on government-issued ID cards.
+
+## Method Signature
+
+```dart
+String? formatID({
+  IdFormatType formatType = IdFormatType.proper
+})
+```
+
+### Parameters
+
+<ParamField path="formatType" type="IdFormatType" default="IdFormatType.proper">
+  The desired output format for the national ID. See [Format Types](#format-types) below.
+</ParamField>
+
+## Format Types
+
+The `IdFormatType` enum provides two formatting options:
+
+<Tabs>
+  <Tab title="Proper">
+    ### IdFormatType.proper
+    
+    The official format as seen on Zimbabwean national identity cards.
+    
+    **Format:** `XX-XXXXXX X XX`
+    
+    **Example:** `11-223344 K 55`
+    
+    This is the default format and matches the layout on physical ID documents issued by the Zimbabwean government.
+    
+    ```dart
+    IdFormatType.proper
+    ```
+  </Tab>
+  
+  <Tab title="No Space">
+    ### IdFormatType.noSpace
+    
+    A compact format without spaces, useful for database storage or systems that don't accept spaces.
+    
+    **Format:** `XXXXXXXXXXXX`
+    
+    **Example:** `11223344K55`
+    
+    ```dart
+    IdFormatType.noSpace
+    ```
+  </Tab>
+</Tabs>
+
+## Usage Examples
+
+<CodeGroup>
+
+```dart Basic Usage
+import 'package:localregex/localregex.dart';
+
+// Format to proper format (default)
+String? formatted = '11223344K55'.formatID(
+  formatType: IdFormatType.proper
+);
+print(formatted); // Output: 11-223344 K 55
+```
+
+```dart Different Input Formats
+import 'package:localregex/localregex.dart';
+
+// Works with various input formats
+String? id1 = '11223344K55'.formatID();
+print(id1); // Output: 11-223344 K 55
+
+String? id2 = '11-223344K55'.formatID();
+print(id2); // Output: 11-223344 K 55
+
+String? id3 = '11 223344 K 55'.formatID();
+print(id3); // Output: 11-223344 K 55
+```
+
+```dart No Space Format
+import 'package:localregex/localregex.dart';
+
+// Format without spaces for database storage
+String? compact = '11-223344 K 55'.formatID(
+  formatType: IdFormatType.noSpace
+);
+print(compact); // Output: 11223344K55
+```
+
+```dart Converting Between Formats
+import 'package:localregex/localregex.dart';
+
+void convertIDFormats(String nationalID) {
+  // Get proper format
+  final proper = nationalID.formatID(
+    formatType: IdFormatType.proper,
+  );
+  
+  // Get compact format
+  final noSpace = nationalID.formatID(
+    formatType: IdFormatType.noSpace,
+  );
+  
+  print('Proper Format: $proper');
+  print('Compact Format: $noSpace');
+}
+
+convertIDFormats('11223344K55');
+// Output:
+// Proper Format: 11-223344 K 55
+// Compact Format: 11223344K55
+```
+
+</CodeGroup>
+
+## Format Breakdown
+
+The proper format `11-223344 K 55` consists of:
+
+<Steps>
+  <Step title="Prefix (2 digits)">
+    The first two digits identify the registration district.
+    
+    Example: `11`
+  </Step>
+  
+  <Step title="Hyphen Separator">
+    A hyphen separates the district from the registration number.
+    
+    Example: `-`
+  </Step>
+  
+  <Step title="Registration Number (6 digits)">
+    Six digits representing the sequential registration number.
+    
+    Example: `223344`
+  </Step>
+  
+  <Step title="Check Letter (1 character)">
+    A single uppercase letter used as a check digit.
+    
+    Example: `K`
+  </Step>
+  
+  <Step title="Suffix (2 digits)">
+    Two final digits with a space before the last digit.
+    
+    Example: `55` becomes ` 5` (space) + `5`
+  </Step>
+</Steps>
+
+## Before & After Examples
+
+<CardGroup cols={2}>
+  <Card title="Input" icon="arrow-right">
+    ```dart
+    '11223344K55'
+    '11-223344K55'
+    '11 223344 K 55'
+    '11-223344 K55'
+    ```
+  </Card>
+  
+  <Card title="Output (Proper)" icon="check">
+    ```dart
+    '11-223344 K 55'
+    '11-223344 K 55'
+    '11-223344 K 55'
+    '11-223344 K 55'
+    ```
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Input" icon="arrow-right">
+    ```dart
+    '11-223344 K 55'
+    '11 223344 K 55'
+    '11223344K55'
+    ```
+  </Card>
+  
+  <Card title="Output (No Space)" icon="check">
+    ```dart
+    '11223344K55'
+    '11223344K55'
+    '11223344K55'
+    ```
+  </Card>
+</CardGroup>
+
+## Exception Handling
+
+The `formatID()` method throws a `LocalRegexException` if the national ID is invalid:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+try {
+  String? formatted = 'INVALID123'.formatID();
+  print(formatted);
+} on LocalRegexException catch (e) {
+  print('Error: ${e.message}');
+  // Output: Error: National ID is not valid
+}
+```
+
+<Warning>
+  Always validate user input with try-catch blocks when formatting national IDs to handle invalid IDs gracefully.
+</Warning>
+
+## Case Handling
+
+<Note>
+  The `formatID()` method automatically converts the check letter to uppercase, ensuring consistent output regardless of input casing.
+</Note>
+
+```dart
+// Lowercase input
+String? id1 = '11223344k55'.formatID();
+print(id1); // Output: 11-223344 K 55
+
+// Mixed case input
+String? id2 = '11-223344 k 55'.formatID();
+print(id2); // Output: 11-223344 K 55
+```
+
+## Validation
+
+The method validates the national ID using `LocalRegex.isZimID()` before formatting. The ID must:
+
+- Match the Zimbabwean national ID pattern
+- Contain valid district prefix
+- Have the correct structure with check letter
+- Include proper suffix digits
+
+If validation fails, a `LocalRegexException` is thrown with the message: `"National ID is not valid"`.
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="User Forms" icon="file-lines">
+    Display formatted IDs in registration and profile forms for better readability.
+  </Card>
+  
+  <Card title="Database Storage" icon="database">
+    Use `IdFormatType.noSpace` for consistent, space-free storage in databases.
+  </Card>
+  
+  <Card title="Document Generation" icon="file-pdf">
+    Format IDs in the proper government format for official documents and reports.
+  </Card>
+  
+  <Card title="Data Import" icon="file-import">
+    Standardize ID formats when importing data from various sources.
+  </Card>
+</CardGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="National ID Validation" icon="check-circle" href="/validation/identity-documents">
+    Learn about national ID validation methods
+  </Card>
+  <Card title="Phone Number Formatting" icon="phone" href="/formatting/phone-numbers">
+    Format Zimbabwean phone numbers
+  </Card>
+</CardGroup>

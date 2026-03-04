@@ -1,0 +1,257 @@
+---
+title: "Mobile Number Validation"
+description: "Validate Zimbabwe mobile numbers for major network providers"
+---
+
+## Overview
+
+LocalRegex provides comprehensive validation for Zimbabwe mobile numbers across all major network providers. You can validate numbers for specific carriers or check if a number is a valid Zimbabwean mobile number.
+
+## Network Provider Methods
+
+### isNetone()
+
+Validates Netone mobile numbers.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number is a valid Netone number, `false` otherwise
+
+**Pattern:** Numbers starting with `71` (with optional `+263` or `0` prefix)
+
+<CodeGroup>
+```dart Valid Examples
+LocalRegex.isNetone('0712345678');     // true
+LocalRegex.isNetone('263712345678');   // true
+LocalRegex.isNetone('+263712345678');  // true
+```
+
+```dart Invalid Examples
+LocalRegex.isNetone('0772345678');     // false (Econet)
+LocalRegex.isNetone('0732345678');     // false (Telecel)
+LocalRegex.isNetone('071234');         // false (too short)
+```
+</CodeGroup>
+
+---
+
+### isEconet()
+
+Validates Econet mobile numbers.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number is a valid Econet number, `false` otherwise
+
+**Pattern:** Numbers starting with `77` or `78` (with optional `+263` or `0` prefix)
+
+<CodeGroup>
+```dart Valid Examples
+LocalRegex.isEconet('0771234567');     // true
+LocalRegex.isEconet('0781234567');     // true
+LocalRegex.isEconet('263771234567');   // true
+LocalRegex.isEconet('+263781234567');  // true
+```
+
+```dart Invalid Examples
+LocalRegex.isEconet('0712345678');     // false (Netone)
+LocalRegex.isEconet('0732345678');     // false (Telecel)
+```
+</CodeGroup>
+
+---
+
+### isTelecel()
+
+Validates Telecel mobile numbers.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number is a valid Telecel number, `false` otherwise
+
+**Pattern:** Numbers starting with `73` (with optional `+263` or `0` prefix)
+
+<CodeGroup>
+```dart Valid Examples
+LocalRegex.isTelecel('0732345678');     // true
+LocalRegex.isTelecel('263732345678');   // true
+LocalRegex.isTelecel('+263732345678');  // true
+```
+
+```dart Invalid Examples
+LocalRegex.isTelecel('0712345678');     // false (Netone)
+LocalRegex.isTelecel('0772345678');     // false (Econet)
+```
+</CodeGroup>
+
+---
+
+## Combined Validation Methods
+
+### isZimMobile()
+
+Validates if a number belongs to any of the major Zimbabwe mobile network providers (Netone, Econet, or Telecel).
+
+<ParamField path="value" type="String" required>
+  The phone number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number is a valid Zimbabwe mobile number, `false` otherwise
+
+<Note>
+  This method is implemented as: `isEconet(value) || isNetone(value) || isTelecel(value)`
+</Note>
+
+```dart Usage Example
+// Accepts any major Zimbabwe mobile provider
+if (LocalRegex.isZimMobile('0771234567')) {
+  print('Valid Zimbabwe mobile number');
+}
+
+LocalRegex.isZimMobile('0771234567');  // true (Econet)
+LocalRegex.isZimMobile('0712345678');  // true (Netone)
+LocalRegex.isZimMobile('0732345678');  // true (Telecel)
+LocalRegex.isZimMobile('0242123456');  // false (Landline)
+```
+
+---
+
+### isValidMobile()
+
+Generic mobile number validation that accepts any format with optional country code.
+
+<ParamField path="mobileNumber" type="String" required>
+  The mobile number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number matches mobile number pattern, `false` otherwise
+
+**Pattern:** Optional `+` followed by 2-digit country code, then 10 digits
+
+<Warning>
+  The source code recommends using `isZimMobile()` instead of this method for Zimbabwe-specific validation.
+</Warning>
+
+```dart Usage Example
+LocalRegex.isValidMobile('0771234567');    // true
+LocalRegex.isValidMobile('+263771234567'); // true
+```
+
+---
+
+## isZimMobile() vs isValidMobile()
+
+<Tabs>
+  <Tab title="isZimMobile()">
+    **Recommended for Zimbabwe numbers**
+    
+    - Validates against specific carrier prefixes (71, 77, 78, 73)
+    - Ensures the number belongs to a known Zimbabwe mobile provider
+    - More strict validation
+    - Better for Zimbabwe-specific applications
+    
+    ```dart
+    LocalRegex.isZimMobile('0771234567');  // true
+    LocalRegex.isZimMobile('0791234567');  // false (not a valid carrier)
+    ```
+  </Tab>
+  
+  <Tab title="isValidMobile()">
+    **Generic mobile validation**
+    
+    - Validates general mobile number format
+    - Accepts any number with correct length and format
+    - Less specific to Zimbabwe carriers
+    - May accept numbers that aren't actual Zimbabwe mobile numbers
+    
+    ```dart
+    LocalRegex.isValidMobile('0771234567');  // true
+    LocalRegex.isValidMobile('0791234567');  // true (accepts any prefix)
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+### isZimLandline()
+
+Validates Zimbabwe landline numbers (currently Telone, as they are the only landline provider).
+
+<ParamField path="value" type="String" required>
+  The landline number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number is a valid Zimbabwe landline, `false` otherwise
+
+**Supported Area Codes:**
+- Harare: 242, 24213, 24215, 24214, etc.
+- Bulawayo: 292, 292861, 292821, etc.
+- Other major cities and regions
+
+```dart Usage Example
+LocalRegex.isZimLandline('0242123456');    // true
+LocalRegex.isZimLandline('263242123456');  // true
+LocalRegex.isZimLandline('+263242123456'); // true
+LocalRegex.isZimLandline('0771234567');    // false (mobile)
+```
+
+<Note>
+  The validation pattern includes comprehensive area codes for all Zimbabwe regions including Harare, Bulawayo, Mutare, Gweru, Masvingo, and other cities.
+</Note>
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Specific Methods" icon="check">
+    When you know the expected carrier, use specific methods like `isNetone()`, `isEconet()`, or `isTelecel()` for stricter validation.
+  </Card>
+  
+  <Card title="Flexible Input" icon="phone">
+    All methods accept numbers with or without country code prefixes (`0`, `263`, `+263`).
+  </Card>
+  
+  <Card title="Zimbabwe-Specific" icon="location-dot">
+    Use `isZimMobile()` instead of `isValidMobile()` for Zimbabwe-specific applications.
+  </Card>
+  
+  <Card title="Clean Numbers" icon="broom">
+    Numbers are automatically cleaned of whitespace before validation.
+  </Card>
+</CardGroup>
+
+---
+
+## Complete Example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void validatePhoneNumber(String number) {
+  // Check specific carrier
+  if (LocalRegex.isEconet(number)) {
+    print('Econet number detected');
+  } else if (LocalRegex.isNetone(number)) {
+    print('Netone number detected');
+  } else if (LocalRegex.isTelecel(number)) {
+    print('Telecel number detected');
+  }
+  
+  // Or check if it's any Zimbabwe mobile
+  if (LocalRegex.isZimMobile(number)) {
+    print('Valid Zimbabwe mobile number');
+  }
+  
+  // Check for landline
+  if (LocalRegex.isZimLandline(number)) {
+    print('Zimbabwe landline number');
+  }
+}
+```

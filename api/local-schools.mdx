@@ -1,0 +1,318 @@
+---
+title: LocalSchools enum
+description: Enum for validating student ID numbers from major Zimbabwean educational institutions
+---
+
+The `LocalSchools` enum represents major educational institutions in Zimbabwe and provides validation for their student ID formats.
+
+## Enum Values
+
+### hit
+
+Harare Institute of Technology
+
+<ResponseField name="format" type="String">
+  H followed by 6 digits and an uppercase letter (HXXXXXXY)
+</ResponseField>
+
+```dart
+if (LocalSchools.hit.isStudent('H180202M')) {
+  print('Valid HIT student ID');
+}
+
+if (LocalSchools.hit.isStudent('H123456A')) {
+  print('This is a HIT student');
+}
+
+// Invalid examples
+LocalSchools.hit.isStudent('H12345A');   // false (only 5 digits)
+LocalSchools.hit.isStudent('h180202M');  // false (lowercase h)
+LocalSchools.hit.isStudent('H180202');   // false (missing letter)
+```
+
+### telone
+
+Telone Centre for Learning
+
+<ResponseField name="format" type="String">
+  T followed by 7 digits and an uppercase letter (TXXXXXXXZ)
+</ResponseField>
+
+```dart
+if (LocalSchools.telone.isStudent('T2216313T')) {
+  print('Valid Telone student ID');
+}
+
+if (LocalSchools.telone.isStudent('T1234567B')) {
+  print('This is a Telone student');
+}
+
+// Invalid examples
+LocalSchools.telone.isStudent('T216313T');   // false (only 6 digits)
+LocalSchools.telone.isStudent('t2216313T');  // false (lowercase t)
+LocalSchools.telone.isStudent('T2216313');   // false (missing letter)
+```
+
+### uz
+
+University of Zimbabwe
+
+<ResponseField name="format" type="String">
+  R followed by 6 digits and an uppercase letter (RXXXXXXY)
+</ResponseField>
+
+```dart
+if (LocalSchools.uz.isStudent('R123456A')) {
+  print('Valid UZ student ID');
+}
+
+if (LocalSchools.uz.isStudent('R198765B')) {
+  print('This is a UZ student');
+}
+
+// Invalid examples
+LocalSchools.uz.isStudent('R12345A');    // false (only 5 digits)
+LocalSchools.uz.isStudent('r123456A');   // false (lowercase r)
+LocalSchools.uz.isStudent('R123456');    // false (missing letter)
+```
+
+### msu
+
+Midlands State University
+
+<ResponseField name="format" type="String">
+  R followed by 7 digits and an uppercase letter (RXXXXXXXZ)
+</ResponseField>
+
+```dart
+if (LocalSchools.msu.isStudent('R1234567C')) {
+  print('Valid MSU student ID');
+}
+
+if (LocalSchools.msu.isStudent('R2019876D')) {
+  print('This is an MSU student');
+}
+
+// Invalid examples
+LocalSchools.msu.isStudent('R123456C');    // false (only 6 digits)
+LocalSchools.msu.isStudent('r1234567C');   // false (lowercase r)
+LocalSchools.msu.isStudent('R1234567');    // false (missing letter)
+```
+
+## Extension Method
+
+### isStudent()
+
+Validates if the given string matches the student ID format for the specified institution.
+
+<ParamField path="studentId" type="String" required>
+  The student ID to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the student ID is valid for the institution, `false` otherwise
+</ResponseField>
+
+```dart
+// Check multiple schools
+final studentId = 'H180202M';
+
+for (final school in LocalSchools.values) {
+  if (school.isStudent(studentId)) {
+    print('Student belongs to: ${school.name}');
+    break;
+  }
+}
+```
+
+## Usage Examples
+
+### Student Registration Form
+
+```dart
+class StudentValidator {
+  LocalSchools? identifySchool(String studentId) {
+    for (final school in LocalSchools.values) {
+      if (school.isStudent(studentId)) {
+        return school;
+      }
+    }
+    return null;
+  }
+  
+  String getSchoolName(LocalSchools school) {
+    switch (school) {
+      case LocalSchools.hit:
+        return 'Harare Institute of Technology';
+      case LocalSchools.telone:
+        return 'Telone Centre for Learning';
+      case LocalSchools.uz:
+        return 'University of Zimbabwe';
+      case LocalSchools.msu:
+        return 'Midlands State University';
+    }
+  }
+}
+
+// Usage
+final validator = StudentValidator();
+final school = validator.identifySchool('H180202M');
+if (school != null) {
+  print('Identified: ${validator.getSchoolName(school)}');
+  // Output: Identified: Harare Institute of Technology
+}
+```
+
+### Multi-Institution Login
+
+```dart
+Future<void> authenticateStudent(String studentId, String password) async {
+  LocalSchools? institution;
+  
+  // Identify which institution
+  for (final school in LocalSchools.values) {
+    if (school.isStudent(studentId)) {
+      institution = school;
+      break;
+    }
+  }
+  
+  if (institution == null) {
+    throw Exception('Invalid student ID format');
+  }
+  
+  // Authenticate with institution-specific endpoint
+  final endpoint = getAuthEndpoint(institution);
+  await authenticate(endpoint, studentId, password);
+}
+
+String getAuthEndpoint(LocalSchools school) {
+  switch (school) {
+    case LocalSchools.hit:
+      return 'https://portal.hit.ac.zw/auth';
+    case LocalSchools.telone:
+      return 'https://portal.telone.ac.zw/auth';
+    case LocalSchools.uz:
+      return 'https://portal.uz.ac.zw/auth';
+    case LocalSchools.msu:
+      return 'https://portal.msu.ac.zw/auth';
+  }
+}
+```
+
+### Student Discount Verification
+
+```dart
+class DiscountService {
+  bool isEligibleForStudentDiscount(String studentId) {
+    // Check if ID belongs to any recognized institution
+    return LocalSchools.values.any(
+      (school) => school.isStudent(studentId),
+    );
+  }
+  
+  double applyDiscount(double amount, String studentId) {
+    if (isEligibleForStudentDiscount(studentId)) {
+      return amount * 0.85; // 15% student discount
+    }
+    return amount;
+  }
+}
+
+// Usage
+final service = DiscountService();
+final price = 100.0;
+final studentId = 'R123456A';
+
+if (service.isEligibleForStudentDiscount(studentId)) {
+  final discounted = service.applyDiscount(price, studentId);
+  print('Student price: \$${discounted}'); // Student price: $85.0
+}
+```
+
+### Bulk Validation
+
+```dart
+Map<LocalSchools, List<String>> categorizeStudents(List<String> studentIds) {
+  final categorized = <LocalSchools, List<String>>{};
+  
+  for (final school in LocalSchools.values) {
+    categorized[school] = [];
+  }
+  
+  for (final id in studentIds) {
+    for (final school in LocalSchools.values) {
+      if (school.isStudent(id)) {
+        categorized[school]!.add(id);
+        break;
+      }
+    }
+  }
+  
+  return categorized;
+}
+
+// Usage
+final ids = ['H180202M', 'T2216313T', 'R123456A', 'R1234567C'];
+final grouped = categorizeStudents(ids);
+
+grouped.forEach((school, students) {
+  if (students.isNotEmpty) {
+    print('${school.name}: ${students.length} students');
+  }
+});
+// Output:
+// hit: 1 students
+// telone: 1 students
+// uz: 1 students
+// msu: 1 students
+```
+
+### Form Validation
+
+```dart
+class StudentIdValidator {
+  String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Student ID is required';
+    }
+    
+    // Check format for all schools
+    final isValid = LocalSchools.values.any(
+      (school) => school.isStudent(value),
+    );
+    
+    if (!isValid) {
+      return 'Invalid student ID format for supported institutions';
+    }
+    
+    return null; // Valid
+  }
+}
+
+// In Flutter form
+TextFormField(
+  validator: StudentIdValidator().validate,
+  decoration: InputDecoration(
+    labelText: 'Student ID',
+    hintText: 'H180202M, T2216313T, R123456A, or R1234567C',
+  ),
+);
+```
+
+## Format Summary
+
+| Institution | Format | Example | Pattern |
+|-------------|--------|---------|----------|
+| HIT | HXXXXXXY | H180202M | H + 6 digits + letter |
+| Telone | TXXXXXXXZ | T2216313T | T + 7 digits + letter |
+| UZ | RXXXXXXY | R123456A | R + 6 digits + letter |
+| MSU | RXXXXXXXZ | R1234567C | R + 7 digits + letter |
+
+<Note>
+  Both UZ and MSU use the letter 'R' as a prefix, but UZ IDs have 6 digits while MSU IDs have 7 digits. The validation correctly distinguishes between them based on length.
+</Note>
+
+<Warning>
+  Student ID validation is case-sensitive. All letters (prefixes and suffixes) must be uppercase. Lowercase letters will fail validation.
+</Warning>

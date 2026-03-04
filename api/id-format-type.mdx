@@ -1,0 +1,239 @@
+---
+title: IdFormatType enum
+description: Enum for specifying national ID output formats
+---
+
+The `IdFormatType` enum allows you to specify the desired format when formatting Zimbabwean national ID numbers using the `formatID()` extension method.
+
+## Enum Values
+
+### proper
+
+Formats the national ID in the standard format as seen on government-issued identification cards, with a hyphen after the first two digits and spaces before the check letter and last two digits.
+
+<ResponseField name="format" type="String">
+  XX-XXXXXX Y ZZ (where XX is the district, XXXXXX is the registration number, Y is the check letter, ZZ is the sequence)
+</ResponseField>
+
+```dart
+final id = '63123456A53'.formatID(); // Default is proper
+print(id); // 63-123456 A 53
+
+final explicit = '63123456A53'.formatID(
+  formatType: IdFormatType.proper,
+);
+print(explicit); // 63-123456 A 53
+```
+
+**Use cases:**
+- Displaying IDs to users
+- Official documents and forms
+- ID verification screens
+- Matching the physical ID card format
+- User-friendly display
+
+### noSpace
+
+Formats the national ID in a compact format without spaces or hyphens, suitable for storage and processing.
+
+<ResponseField name="format" type="String">
+  XXXXXXXXXYZZ (11 characters with no separators)
+</ResponseField>
+
+```dart
+final id = '63-123456 A 53'.formatID(
+  formatType: IdFormatType.noSpace,
+);
+print(id); // 63123456A53
+
+final messy = '63 123456A53'.formatID(
+  formatType: IdFormatType.noSpace,
+);
+print(messy); // 63123456A53
+```
+
+**Use cases:**
+- Database storage (consistent format)
+- API payloads
+- Comparison and matching operations
+- QR codes and barcodes
+- URL parameters
+
+## Usage Examples
+
+### User Registration Form
+
+```dart
+class RegistrationForm {
+  final TextEditingController idController = TextEditingController();
+  String? storedId;
+  
+  void validateAndStore() {
+    final input = idController.text;
+    
+    if (LocalRegex.isZimID(input)) {
+      // Store in compact format
+      storedId = input.formatID(formatType: IdFormatType.noSpace);
+      
+      // Display in proper format
+      final display = input.formatID(formatType: IdFormatType.proper);
+      showDialog('ID saved: $display');
+    } else {
+      showError('Invalid national ID');
+    }
+  }
+}
+```
+
+### ID Verification Display
+
+```dart
+Widget buildIdDisplay(String storedId) {
+  final formatted = storedId.formatID(
+    formatType: IdFormatType.proper,
+  );
+  
+  return Text(
+    'National ID: $formatted',
+    style: TextStyle(fontSize: 16, letterSpacing: 1.2),
+  );
+}
+
+// Usage
+buildIdDisplay('63123456A53'); // Displays: National ID: 63-123456 A 53
+```
+
+### Database Model
+
+```dart
+class User {
+  final String nationalId; // Stored in compact format
+  
+  User({required String rawId}) 
+    : nationalId = rawId.formatID(formatType: IdFormatType.noSpace)!;
+  
+  String get displayId => nationalId.formatID(
+    formatType: IdFormatType.proper,
+  )!;
+  
+  // For JSON serialization
+  Map<String, dynamic> toJson() => {
+    'national_id': nationalId, // 63123456A53
+  };
+}
+
+final user = User(rawId: '63-123456 A 53');
+print(user.nationalId);    // 63123456A53 (stored)
+print(user.displayId);     // 63-123456 A 53 (displayed)
+```
+
+### API Integration
+
+```dart
+Future<void> verifyIdentity(String nationalId) async {
+  // Format for API (compact format)
+  final formattedId = nationalId.formatID(
+    formatType: IdFormatType.noSpace,
+  );
+  
+  final response = await http.post(
+    Uri.parse('https://api.example.com/verify'),
+    body: jsonEncode({
+      'id_number': formattedId, // 63123456A53
+    }),
+  );
+  
+  if (response.statusCode == 200) {
+    // Display result in proper format
+    final displayId = nationalId.formatID(
+      formatType: IdFormatType.proper,
+    );
+    print('Verified: $displayId'); // 63-123456 A 53
+  }
+}
+```
+
+### Search and Comparison
+
+```dart
+List<User> searchByNationalId(String query, List<User> users) {
+  // Convert search query to compact format for comparison
+  final cleanQuery = query.formatID(
+    formatType: IdFormatType.noSpace,
+  );
+  
+  return users.where((user) {
+    final cleanUserId = user.nationalId.formatID(
+      formatType: IdFormatType.noSpace,
+    );
+    return cleanUserId == cleanQuery;
+  }).toList();
+}
+
+// Works with any input format
+searchByNationalId('63-123456 A 53', users);  // Found
+searchByNationalId('63123456A53', users);      // Found
+searchByNationalId('63 123456 A 53', users);   // Found
+```
+
+### Input Normalization
+
+```dart
+String normalizeIdInput(String userInput) {
+  try {
+    // Always store in one consistent format
+    return userInput.formatID(
+      formatType: IdFormatType.noSpace,
+    )!;
+  } on LocalRegexException {
+    throw FormatException('Invalid national ID format');
+  }
+}
+
+// Accepts various formats from users
+print(normalizeIdInput('63-123456 A 53'));  // 63123456A53
+print(normalizeIdInput('63123456a53'));      // 63123456A53 (uppercase)
+print(normalizeIdInput('63 123456A53'));     // 63123456A53
+```
+
+## Format Comparison
+
+| Input Format | proper | noSpace |
+|--------------|--------|----------|
+| 63-123456 A 53 | 63-123456 A 53 | 63123456A53 |
+| 63123456A53 | 63-123456 A 53 | 63123456A53 |
+| 63 123456 A 53 | 63-123456 A 53 | 63123456A53 |
+| 63123456a53 | 63-123456 A 53 | 63123456A53 |
+| 11-2345678 B 99 | 11-2345678 B 99 | 112345678B99 |
+
+<Note>
+  The output is always returned in uppercase, regardless of the input casing. Both formats work with 6 or 7 digit registration numbers.
+</Note>
+
+## Best Practices
+
+### Storage
+- Use `IdFormatType.noSpace` for database storage
+- Ensures consistent format for queries and comparisons
+- Reduces storage space
+- Eliminates formatting inconsistencies
+
+### Display
+- Use `IdFormatType.proper` for user interfaces
+- Matches the familiar format from physical ID cards
+- Improves readability
+- Provides better user experience
+
+### Validation
+- Always validate with `LocalRegex.isZimID()` before formatting
+- Handle `LocalRegexException` for invalid IDs
+- Format the ID immediately after validation
+
+```dart
+try {
+  final id = userInput.formatID(formatType: IdFormatType.noSpace);
+  await saveToDatabase(id);
+} on LocalRegexException catch (e) {
+  showError('Invalid ID: ${e.message}');
+}
+```

@@ -1,0 +1,240 @@
+---
+title: Phone Number Formatting
+description: Format Zimbabwean phone numbers in different styles using the formatNumber() extension method
+---
+
+## Overview
+
+LocalRegex provides a powerful `formatNumber()` extension method on `String` that allows you to format Zimbabwean phone numbers in different styles. This method validates the phone number and returns it in your preferred format.
+
+<Note>
+  The `formatNumber()` method is specifically designed for Zimbabwean numbers (mobile, VOIP, and landline). It validates against Zimbabwe-specific patterns before formatting.
+</Note>
+
+## Method Signature
+
+```dart
+String? formatNumber({
+  required FormatType formatType,
+  bool cleanNumber = true,
+})
+```
+
+### Parameters
+
+<ParamField path="formatType" type="FormatType" required>
+  The desired output format for the phone number. See [Format Types](#format-types) below.
+</ParamField>
+
+<ParamField path="cleanNumber" type="bool" default="true">
+  Whether to strip all non-digit characters before formatting. When `true`, removes spaces, parentheses, hyphens, and other formatting characters.
+  
+  **Examples:**
+  - `(077) 612-3098` → `0776123098`
+  - `(024) 212-3098` → `0242123098`
+</ParamField>
+
+## Format Types
+
+The `FormatType` enum provides three formatting options:
+
+<Tabs>
+  <Tab title="Regular">
+    ### FormatType.regular
+    
+    The standard local format with leading zero (e.g., `0777213388`).
+    
+    This is the most common format used within Zimbabwe for mobile and landline numbers.
+    
+    ```dart
+    FormatType.regular
+    ```
+  </Tab>
+  
+  <Tab title="Country Code">
+    ### FormatType.countryCode
+    
+    International format without the plus sign (e.g., `263777213388`).
+    
+    Useful for SMS gateways and APIs that expect country code without the `+` symbol.
+    
+    ```dart
+    FormatType.countryCode
+    ```
+  </Tab>
+  
+  <Tab title="Country Code Plus">
+    ### FormatType.countryCodePlus
+    
+    International format with the plus sign (e.g., `+263777213388`).
+    
+    The standard E.164 format recommended for international dialing and most modern applications.
+    
+    ```dart
+    FormatType.countryCodePlus
+    ```
+  </Tab>
+</Tabs>
+
+## Usage Examples
+
+<CodeGroup>
+
+```dart Basic Usage
+import 'package:localregex/localregex.dart';
+
+// Format to regular format
+String? number = '+263777213388'.formatNumber(
+  formatType: FormatType.regular
+);
+print(number); // Output: 0777213388
+
+// Format to country code
+String? number2 = '0777213388'.formatNumber(
+  formatType: FormatType.countryCode
+);
+print(number2); // Output: 263777213388
+
+// Format to country code with plus
+String? number3 = '0777213388'.formatNumber(
+  formatType: FormatType.countryCodePlus
+);
+print(number3); // Output: +263777213388
+```
+
+```dart With Auto-formatted Numbers
+import 'package:localregex/localregex.dart';
+
+// Phone contacts often have auto-formatting
+String autoFormatted = '(077) 612-3098';
+
+// cleanNumber parameter strips formatting (default: true)
+String? cleaned = autoFormatted.formatNumber(
+  formatType: FormatType.regular,
+  cleanNumber: true,
+);
+print(cleaned); // Output: 0776123098
+
+// Landline example
+String landline = '(024) 212-3098';
+String? formatted = landline.formatNumber(
+  formatType: FormatType.countryCodePlus,
+  cleanNumber: true,
+);
+print(formatted); // Output: +263242123098
+```
+
+```dart Converting Between Formats
+import 'package:localregex/localregex.dart';
+
+void convertFormats(String phoneNumber) {
+  // Convert any format to regular format
+  final regular = phoneNumber.formatNumber(
+    formatType: FormatType.regular,
+  );
+  
+  // Convert to international format
+  final international = phoneNumber.formatNumber(
+    formatType: FormatType.countryCodePlus,
+  );
+  
+  // Convert to country code without plus
+  final countryCode = phoneNumber.formatNumber(
+    formatType: FormatType.countryCode,
+  );
+  
+  print('Regular: $regular');
+  print('International: $international');
+  print('Country Code: $countryCode');
+}
+
+// Example output:
+// Regular: 0777213388
+// International: +263777213388
+// Country Code: 263777213388
+```
+
+</CodeGroup>
+
+## Before & After Examples
+
+<CardGroup cols={2}>
+  <Card title="Input" icon="arrow-right">
+    ```dart
+    '+263777213388'
+    '0777213388'
+    '263777213388'
+    '(077) 721-3388'
+    ```
+  </Card>
+  
+  <Card title="Output (Regular)" icon="check">
+    ```dart
+    '0777213388'
+    '0777213388'
+    '0777213388'
+    '0777213388'
+    ```
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Input" icon="arrow-right">
+    ```dart
+    '0777213388'
+    '+263777213388'
+    '(077) 721-3388'
+    ```
+  </Card>
+  
+  <Card title="Output (Country Code Plus)" icon="check">
+    ```dart
+    '+263777213388'
+    '+263777213388'
+    '+263777213388'
+    ```
+  </Card>
+</CardGroup>
+
+## Exception Handling
+
+The `formatNumber()` method throws a `LocalRegexException` if the phone number is invalid:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+try {
+  String? formatted = '1234567'.formatNumber(
+    formatType: FormatType.regular,
+  );
+  print(formatted);
+} on LocalRegexException catch (e) {
+  print('Error: ${e.message}');
+  // Output: Error: Phone number is not valid!
+}
+```
+
+<Warning>
+  Always wrap `formatNumber()` calls in try-catch blocks when dealing with user input to handle invalid phone numbers gracefully.
+</Warning>
+
+## Validation
+
+The method automatically validates that the phone number matches one of these Zimbabwe patterns:
+
+- **Mobile numbers**: Econet, NetOne, or Telecel
+- **VOIP numbers**: Zimbabwe VOIP providers
+- **Landline numbers**: Zimbabwe landlines
+
+If the number doesn't match any of these patterns, a `LocalRegexException` is thrown.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Validation Methods" icon="check-circle" href="/validation/mobile-numbers">
+    Learn about phone number validation methods
+  </Card>
+  <Card title="National ID Formatting" icon="id-card" href="/formatting/national-ids">
+    Format Zimbabwean national IDs
+  </Card>
+</CardGroup>

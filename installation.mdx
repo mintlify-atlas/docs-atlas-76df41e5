@@ -1,0 +1,81 @@
+---
+title: Installation
+description: Learn how to add LocalRegex to your Dart or Flutter project.
+---
+
+LocalRegex is available on [pub.dev](https://pub.dev/packages/localregex) and can be easily added to any Dart or Flutter project.
+
+## Requirements
+
+<Note>
+  LocalRegex requires Dart SDK version **3.0.0** or higher.
+</Note>
+
+## Add LocalRegex to your project
+
+You can add LocalRegex to your project using one of the following methods:
+
+<CodeGroup>
+
+```bash Flutter
+flutter pub add localregex
+```
+
+```bash Dart
+dart pub add localregex
+```
+
+```yaml Manual
+# Add this to your pubspec.yaml file
+dependencies:
+  localregex: ^4.0.7
+```
+
+</CodeGroup>
+
+After adding the dependency, run the following command to download the package:
+
+<CodeGroup>
+
+```bash Flutter
+flutter pub get
+```
+
+```bash Dart
+dart pub get
+```
+
+</CodeGroup>
+
+## Import the package
+
+Once installed, import LocalRegex in your Dart files:
+
+```dart
+import 'package:localregex/localregex.dart';
+```
+
+<Note>
+  LocalRegex uses static methods, so you don't need to create an instance of the class. Simply import the package and start using the validation methods.
+</Note>
+
+## Verify installation
+
+To verify that LocalRegex is installed correctly, create a simple test:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void main() {
+  final isValid = LocalRegex.isZimMobile('0777123456');
+  print('Is valid Zim mobile: $isValid');
+}
+```
+
+If this code runs without errors and prints `true`, you're all set!
+
+## Next steps
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Learn how to validate and format Zimbabwe-specific patterns
+</Card>

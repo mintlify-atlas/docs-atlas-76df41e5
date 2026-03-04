@@ -1,0 +1,484 @@
+---
+title: Examples
+description: Real-world examples using LocalRegex for common validation scenarios
+---
+
+## Form Validation
+
+Validate user input in forms with comprehensive checks for emails, passwords, and phone numbers.
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class RegistrationForm {
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    if (!LocalRegex.isEmail(value)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    if (!LocalRegex.isPassword(value)) {
+      return 'Password must contain at least 8 characters, '
+          'including uppercase, lowercase, number and special character';
+    }
+    return null;
+  }
+
+  String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    if (!LocalRegex.isZimMobile(value)) {
+      return 'Please enter a valid Zimbabwean mobile number';
+    }
+    return null;
+  }
+
+  // Generate a secure password for users
+  String generateSecurePassword() {
+    return LocalRegex.generatePassword(length: 16);
+  }
+}
+```
+
+## Phone Number Formatter
+
+Format phone numbers as users type, supporting multiple display formats.
+
+<Tabs>
+  <Tab title="Live Formatting">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class PhoneNumberFormatter {
+      String formatAsUserTypes(String input) {
+        try {
+          // Format to country code (+263) format
+          return input.formatNumber(
+            formatType: FormatType.countryCodePlus,
+            cleanNumber: true,
+          ) ?? input;
+        } catch (e) {
+          // Return original input if invalid
+          return input;
+        }
+      }
+
+      // Detect network provider
+      String detectProvider(String phoneNumber) {
+        if (LocalRegex.isEconet(phoneNumber)) {
+          return 'Econet';
+        } else if (LocalRegex.isNetone(phoneNumber)) {
+          return 'NetOne';
+        } else if (LocalRegex.isTelecel(phoneNumber)) {
+          return 'Telecel';
+        } else if (LocalRegex.isZimVoip(phoneNumber)) {
+          return 'VoIP';
+        }
+        return 'Unknown';
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Multiple Formats">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class PhoneNumberDisplay {
+      Map<String, String> getAllFormats(String phoneNumber) {
+        final formats = <String, String>{};
+
+        try {
+          // Regular format: 0771234567
+          formats['regular'] = phoneNumber.formatNumber(
+            formatType: FormatType.regular,
+          )!;
+
+          // Country code: 263771234567
+          formats['countryCode'] = phoneNumber.formatNumber(
+            formatType: FormatType.countryCode,
+          )!;
+
+          // Country code with plus: +263771234567
+          formats['international'] = phoneNumber.formatNumber(
+            formatType: FormatType.countryCodePlus,
+          )!;
+        } catch (e) {
+          formats['error'] = 'Invalid phone number';
+        }
+
+        return formats;
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Clean Numbers">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class PhoneNumberCleaner {
+      String cleanAndFormat(String input) {
+        // Handle formatted input like (077) 123-4567
+        final cleaned = input.formatNumber(
+          formatType: FormatType.regular,
+          cleanNumber: true, // This removes all formatting
+        );
+
+        return cleaned ?? input;
+      }
+
+      // Example usage
+      void demo() {
+        final messyNumber = '(077) 612-3098';
+        final clean = cleanAndFormat(messyNumber);
+        print(clean); // Output: 0776123098
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Identity Verification
+
+Validate multiple document types for identity verification systems.
+
+<Tabs>
+  <Tab title="National ID">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class IDVerification {
+      bool verifyNationalID(String idNumber) {
+        return LocalRegex.isZimID(idNumber);
+      }
+
+      String formatIDForDisplay(String idNumber) {
+        try {
+          // Format with proper spacing: 63-1234567 A 12
+          return idNumber.formatID(
+            formatType: IdFormatType.proper,
+          )!;
+        } catch (e) {
+          throw Exception('Invalid national ID: $idNumber');
+        }
+      }
+
+      String formatIDForStorage(String idNumber) {
+        try {
+          // Format without spaces: 631234567A12
+          return idNumber.formatID(
+            formatType: IdFormatType.noSpace,
+          )!;
+        } catch (e) {
+          throw Exception('Invalid national ID: $idNumber');
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Multiple Documents">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    enum DocumentType {
+      nationalID,
+      passport,
+      driversLicense,
+      numberPlate,
+    }
+
+    class DocumentVerification {
+      bool verifyDocument(String value, DocumentType type) {
+        switch (type) {
+          case DocumentType.nationalID:
+            return LocalRegex.isZimID(value);
+          case DocumentType.passport:
+            return LocalRegex.isZimPassport(value);
+          case DocumentType.driversLicense:
+            return LocalRegex.isZimDriversLicence(value);
+          case DocumentType.numberPlate:
+            return LocalRegex.isZimNumberPlate(value);
+        }
+      }
+
+      String? validateDocumentInput(String? value, DocumentType type) {
+        if (value == null || value.isEmpty) {
+          return 'Document number is required';
+        }
+
+        if (!verifyDocument(value, type)) {
+          return 'Invalid ${_getDocumentTypeName(type)} format';
+        }
+
+        return null;
+      }
+
+      String _getDocumentTypeName(DocumentType type) {
+        switch (type) {
+          case DocumentType.nationalID:
+            return 'National ID';
+          case DocumentType.passport:
+            return 'Passport';
+          case DocumentType.driversLicense:
+            return 'Driver\'s License';
+          case DocumentType.numberPlate:
+            return 'Number Plate';
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Comprehensive Check">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class IdentityService {
+      Map<String, dynamic> verifyIdentity({
+        required String nationalId,
+        required String passport,
+        required String driversLicense,
+      }) {
+        final results = <String, dynamic>{
+          'valid': false,
+          'checks': <String, bool>{},
+          'formattedId': null,
+        };
+
+        // Validate each document
+        results['checks']['nationalId'] = LocalRegex.isZimID(nationalId);
+        results['checks']['passport'] = LocalRegex.isZimPassport(passport);
+        results['checks']['driversLicense'] = 
+            LocalRegex.isZimDriversLicence(driversLicense);
+
+        // All must be valid
+        results['valid'] = results['checks'].values.every((v) => v == true);
+
+        // Format ID if valid
+        if (results['checks']['nationalId']) {
+          try {
+            results['formattedId'] = nationalId.formatID(
+              formatType: IdFormatType.proper,
+            );
+          } catch (e) {
+            results['formattedId'] = nationalId;
+          }
+        }
+
+        return results;
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Student Registration
+
+Validate student IDs for different educational institutions.
+
+<Tabs>
+  <Tab title="Single Institution">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class UniversityRegistration {
+      String? validateStudentID(String? value) {
+        if (value == null || value.isEmpty) {
+          return 'Student ID is required';
+        }
+
+        // Validate HIT student ID format (e.g., H180202M)
+        if (!LocalSchools.hit.isStudent(value)) {
+          return 'Invalid HIT student ID format';
+        }
+
+        return null;
+      }
+
+      bool registerStudent(String studentId, String email) {
+        // Validate student ID
+        if (!LocalSchools.hit.isStudent(studentId)) {
+          return false;
+        }
+
+        // Validate email
+        if (!LocalRegex.isEmail(email)) {
+          return false;
+        }
+
+        // Registration logic here...
+        return true;
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Multiple Institutions">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class MultiInstitutionRegistration {
+      bool validateStudentID(String studentId, LocalSchools school) {
+        return school.isStudent(studentId);
+      }
+
+      LocalSchools? detectInstitution(String studentId) {
+        // Check each institution
+        if (LocalSchools.hit.isStudent(studentId)) {
+          return LocalSchools.hit;
+        }
+        if (LocalSchools.telone.isStudent(studentId)) {
+          return LocalSchools.telone;
+        }
+        if (LocalSchools.uz.isStudent(studentId)) {
+          return LocalSchools.uz;
+        }
+        if (LocalSchools.msu.isStudent(studentId)) {
+          return LocalSchools.msu;
+        }
+        return null;
+      }
+
+      String getInstitutionName(LocalSchools school) {
+        switch (school) {
+          case LocalSchools.hit:
+            return 'Harare Institute of Technology';
+          case LocalSchools.telone:
+            return 'Telone Centre for Learning';
+          case LocalSchools.uz:
+            return 'University of Zimbabwe';
+          case LocalSchools.msu:
+            return 'Midlands State University';
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Batch Validation">
+    ```dart
+    import 'package:localregex/localregex.dart';
+
+    class BatchStudentValidator {
+      Map<String, dynamic> validateStudentBatch(
+        List<Map<String, String>> students,
+      ) {
+        final results = <String, dynamic>{
+          'total': students.length,
+          'valid': 0,
+          'invalid': 0,
+          'details': <Map<String, dynamic>>[],
+        };
+
+        for (final student in students) {
+          final studentId = student['id'] ?? '';
+          final email = student['email'] ?? '';
+          final phone = student['phone'] ?? '';
+
+          final isValidId = LocalSchools.hit.isStudent(studentId) ||
+              LocalSchools.telone.isStudent(studentId) ||
+              LocalSchools.uz.isStudent(studentId) ||
+              LocalSchools.msu.isStudent(studentId);
+
+          final isValidEmail = LocalRegex.isEmail(email);
+          final isValidPhone = LocalRegex.isZimMobile(phone);
+
+          final allValid = isValidId && isValidEmail && isValidPhone;
+
+          results['details'].add({
+            'studentId': studentId,
+            'valid': allValid,
+            'checks': {
+              'id': isValidId,
+              'email': isValidEmail,
+              'phone': isValidPhone,
+            },
+          });
+
+          if (allValid) {
+            results['valid']++;
+          } else {
+            results['invalid']++;
+          }
+        }
+
+        return results;
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Additional Examples
+
+### URL Validation
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class URLValidator {
+  bool isValidWebsite(String url) {
+    return LocalRegex.isUrl(url);
+  }
+
+  String? validateURLInput(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'URL is required';
+    }
+    if (!LocalRegex.isUrl(value)) {
+      return 'Please enter a valid URL';
+    }
+    return null;
+  }
+}
+```
+
+### Date Validation
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class DateValidator {
+  bool isValidDateString(String date) {
+    // Validates dates in DD/MM/YYYY or DD-MM-YYYY format
+    return LocalRegex.isDate(date);
+  }
+
+  String? validateDateOfBirth(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Date of birth is required';
+    }
+    if (!LocalRegex.isDate(value)) {
+      return 'Please enter a valid date (DD/MM/YYYY or DD-MM-YYYY)';
+    }
+    return null;
+  }
+}
+```
+
+### IP Address Validation
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class NetworkValidator {
+  bool isValidIP(String ipAddress) {
+    return LocalRegex.isIpAddress(ipAddress);
+  }
+
+  String? validateIPAddress(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'IP address is required';
+    }
+    if (!LocalRegex.isIpAddress(value)) {
+      return 'Please enter a valid IP address';
+    }
+    return null;
+  }
+}
+```

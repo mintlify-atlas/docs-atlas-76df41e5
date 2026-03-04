@@ -1,0 +1,227 @@
+---
+title: String extensions
+description: Extension methods for String class providing formatting and cleaning utilities
+---
+
+The LocalRegex library provides several extension methods on the `String` class for formatting phone numbers, national IDs, and cleaning strings.
+
+## Number Formatting Extensions
+
+### formatNumber()
+
+Formats a phone number into the requested format. Works with Zimbabwean mobile numbers, VoIP numbers, and landlines.
+
+<ParamField path="formatType" type="FormatType" required>
+  The desired output format:
+  - `FormatType.regular` - Standard format (0771234567)
+  - `FormatType.countryCode` - Country code format (263771234567)
+  - `FormatType.countryCodePlus` - Plus format (+263771234567)
+</ParamField>
+
+<ParamField path="cleanNumber" type="bool" default="true">
+  Whether to strip non-digit characters before formatting. Set to `true` to handle formatted input like "(077) 123-4567"
+</ParamField>
+
+<ResponseField name="returns" type="String?">
+  The formatted phone number, or throws `LocalRegexException` if invalid
+</ResponseField>
+
+<ResponseField name="throws" type="LocalRegexException">
+  Thrown if the phone number is not a valid Zimbabwean number
+</ResponseField>
+
+```dart
+// Format to country code
+final formatted = '0771234567'.formatNumber(
+  formatType: FormatType.countryCode,
+);
+print(formatted); // 263771234567
+
+// Format with plus sign
+final withPlus = '0771234567'.formatNumber(
+  formatType: FormatType.countryCodePlus,
+);
+print(withPlus); // +263771234567
+
+// Convert to regular format
+final regular = '263771234567'.formatNumber(
+  formatType: FormatType.regular,
+);
+print(regular); // 0771234567
+
+// Handle formatted input
+final cleaned = '(077) 123-4567'.formatNumber(
+  formatType: FormatType.countryCode,
+  cleanNumber: true,
+);
+print(cleaned); // 263771234567
+
+// Error handling
+try {
+  '1234'.formatNumber(formatType: FormatType.regular);
+} on LocalRegexException catch (e) {
+  print(e.message); // Phone number is not valid!
+}
+```
+
+### cleanNumber
+
+A getter that removes all non-digit characters from a phone number string.
+
+<ResponseField name="returns" type="String">
+  The phone number with only digits remaining
+</ResponseField>
+
+```dart
+final phone = '(077) 123-4567';
+print(phone.cleanNumber); // 0771234567
+
+final international = '+263 77 123 4567';
+print(international.cleanNumber); // 263771234567
+
+final formatted = '077-123-4567';
+print(formatted.cleanNumber); // 0771234567
+```
+
+<Note>
+  This extension is automatically used when `cleanNumber: true` is passed to `formatNumber()`.
+</Note>
+
+## ID Formatting Extensions
+
+### formatID()
+
+Formats a Zimbabwean national ID number into the requested format.
+
+<ParamField path="formatType" type="IdFormatType" default="IdFormatType.proper">
+  The desired output format:
+  - `IdFormatType.proper` - Standard format with hyphen and spaces (63-123456 A 53)
+  - `IdFormatType.noSpace` - Compact format without spaces (63123456A53)
+</ParamField>
+
+<ResponseField name="returns" type="String?">
+  The formatted national ID, or throws `LocalRegexException` if invalid
+</ResponseField>
+
+<ResponseField name="throws" type="LocalRegexException">
+  Thrown if the national ID is not valid
+</ResponseField>
+
+```dart
+// Format to proper format (default)
+final proper = '63123456A53'.formatID();
+print(proper); // 63-123456 A 53
+
+// Format to compact (no spaces)
+final compact = '63-123456 A 53'.formatID(
+  formatType: IdFormatType.noSpace,
+);
+print(compact); // 63123456A53
+
+// Handles various input formats
+final messy = '63 123456A53'.formatID();
+print(messy); // 63-123456 A 53
+
+// Error handling
+try {
+  'invalid'.formatID();
+} on LocalRegexException catch (e) {
+  print(e.message); // National ID is not valid
+}
+```
+
+<Note>
+  The output is always returned in uppercase, regardless of input casing.
+</Note>
+
+## String Cleaning Extensions
+
+### clean
+
+A getter that removes all whitespace characters from a string.
+
+<ResponseField name="returns" type="String">
+  The string with all whitespace removed
+</ResponseField>
+
+```dart
+final text = '63 123456 A 53';
+print(text.clean); // 63123456A53
+
+final multiline = '''Hello
+  World  
+  Test''';
+print(multiline.clean); // HelloWorldTest
+
+final tabs = 'data\t\twith\ttabs';
+print(tabs.clean); // datawith tabs
+```
+
+### lastCharacters()
+
+Returns the last n characters of a string.
+
+<ParamField path="n" type="int" required>
+  The number of characters to extract from the end
+</ParamField>
+
+<ResponseField name="returns" type="String">
+  A substring containing the last n characters
+</ResponseField>
+
+```dart
+final phone = '0771234567';
+print(phone.lastCharacters(4)); // 4567
+
+final id = '63123456A53';
+print(id.lastCharacters(3)); // A53
+
+final text = 'Hello World';
+print(text.lastCharacters(5)); // World
+```
+
+<Warning>
+  Ensure that `n` is not greater than the string length, or you will get a range error.
+</Warning>
+
+## Usage Examples
+
+### Complete Phone Number Workflow
+
+```dart
+// User input with formatting
+final userInput = '(077) 123-4567';
+
+// Clean and validate
+if (LocalRegex.isZimMobile(userInput.cleanNumber)) {
+  // Format for API submission
+  final apiFormat = userInput.formatNumber(
+    formatType: FormatType.countryCode,
+  );
+  
+  // Format for display
+  final displayFormat = userInput.formatNumber(
+    formatType: FormatType.regular,
+  );
+  
+  print('Send to API: $apiFormat'); // 263771234567
+  print('Show user: $displayFormat'); // 0771234567
+}
+```
+
+### Complete ID Workflow
+
+```dart
+final rawId = '63 123456A53';
+
+// Validate
+if (LocalRegex.isZimID(rawId)) {
+  // Format for display
+  final display = rawId.formatID();
+  print('Display: $display'); // 63-123456 A 53
+  
+  // Format for database
+  final storage = rawId.formatID(formatType: IdFormatType.noSpace);
+  print('Store: $storage'); // 63123456A53
+}
+```

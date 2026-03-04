@@ -1,0 +1,373 @@
+---
+title: "VoIP Provider Validation"
+description: "Validate Zimbabwe VoIP phone numbers for major internet telephony providers"
+---
+
+## Overview
+
+LocalRegex provides validation for Voice over IP (VoIP) phone numbers from all major Zimbabwe internet telephony providers. VoIP numbers in Zimbabwe typically start with `86` followed by provider-specific codes.
+
+## VoIP Provider Methods
+
+### isAfricom()
+
+Validates Africom VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Africom number, `false` otherwise
+
+**Pattern:** Numbers starting with `8644` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isAfricom('0864412345');     // true
+LocalRegex.isAfricom('263864412345');   // true
+LocalRegex.isAfricom('+263864412345');  // true
+LocalRegex.isAfricom('0771234567');     // false
+```
+
+---
+
+### isDandemutande()
+
+Validates Dandemutande VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Dandemutande number, `false` otherwise
+
+**Pattern:** Numbers starting with `8612` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isDandemutande('0861212345');     // true
+LocalRegex.isDandemutande('263861212345');   // true
+LocalRegex.isDandemutande('+263861212345');  // true
+```
+
+<Note>
+  Dandemutande is a Zimbabwe-based VoIP telecommunications provider offering internet telephony services.
+</Note>
+
+---
+
+### isLiquid()
+
+Validates Liquid Telecom VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Liquid number, `false` otherwise
+
+**Pattern:** Numbers starting with `8677` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isLiquid('0867712345');     // true
+LocalRegex.isLiquid('263867712345');   // true
+LocalRegex.isLiquid('+263867712345');  // true
+```
+
+<Note>
+  Liquid Telecom (now Liquid Intelligent Technologies) is one of Africa's largest independent data, voice, and IP providers.
+</Note>
+
+---
+
+### isPowertel()
+
+Validates Powertel VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Powertel number, `false` otherwise
+
+**Pattern:** Numbers starting with `8611` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isPowertel('0861112345');     // true
+LocalRegex.isPowertel('263861112345');   // true
+LocalRegex.isPowertel('+263861112345');  // true
+```
+
+<Note>
+  Powertel is a telecommunications division of ZESA (Zimbabwe Electricity Supply Authority), Zimbabwe's national power utility.
+</Note>
+
+---
+
+### isTelco()
+
+Validates Telco VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Telco number, `false` otherwise
+
+**Pattern:** Numbers starting with `8683` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isTelco('0868312345');     // true
+LocalRegex.isTelco('263868312345');   // true
+LocalRegex.isTelco('+263868312345');  // true
+```
+
+---
+
+### isTelone()
+
+Validates TelOne VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid TelOne VoIP number, `false` otherwise
+
+**Pattern:** Numbers starting with `8688` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isTelone('0868812345');     // true
+LocalRegex.isTelone('263868812345');   // true
+LocalRegex.isTelone('+263868812345');  // true
+```
+
+<Note>
+  This validates TelOne's VoIP numbers. For landline validation, see `isZimLandline()` in the [Mobile Numbers](/validation/mobile-numbers) section.
+</Note>
+
+---
+
+### isZarnet()
+
+Validates Zarnet VoIP numbers.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Zarnet number, `false` otherwise
+
+**Pattern:** Numbers starting with `8622` (with optional `+263` or `0` prefix)
+
+```dart Usage Example
+LocalRegex.isZarnet('0862212345');     // true
+LocalRegex.isZarnet('263862212345');   // true
+LocalRegex.isZarnet('+263862212345');  // true
+```
+
+<Note>
+  Zarnet is a Zimbabwe VoIP telecommunications provider.
+</Note>
+
+---
+
+## Combined VoIP Validation
+
+### isZimVoip()
+
+Validates if a number belongs to any Zimbabwe VoIP provider.
+
+<ParamField path="voipNumber" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid Zimbabwe VoIP number from any provider, `false` otherwise
+
+**Implementation:**
+```dart
+static bool isZimVoip(String voipNumber) =>
+    isAfricom(voipNumber) ||
+    isDandemutande(voipNumber) ||
+    isLiquid(voipNumber) ||
+    isPowertel(voipNumber) ||
+    isTelco(voipNumber) ||
+    isTelone(voipNumber) ||
+    isZarnet(voipNumber);
+```
+
+### Usage Example
+
+```dart
+// Accepts any Zimbabwe VoIP provider
+if (LocalRegex.isZimVoip('0868812345')) {
+  print('Valid Zimbabwe VoIP number');
+}
+
+LocalRegex.isZimVoip('0864412345');  // true (Africom)
+LocalRegex.isZimVoip('0861212345');  // true (Dandemutande)
+LocalRegex.isZimVoip('0867712345');  // true (Liquid)
+LocalRegex.isZimVoip('0861112345');  // true (Powertel)
+LocalRegex.isZimVoip('0868312345');  // true (Telco)
+LocalRegex.isZimVoip('0868812345');  // true (TelOne)
+LocalRegex.isZimVoip('0862212345');  // true (Zarnet)
+LocalRegex.isZimVoip('0771234567');  // false (Mobile)
+```
+
+---
+
+## VoIP Provider Codes
+
+<CardGroup cols={2}>
+  <Card title="Africom" icon="phone">
+    **Prefix:** `8644`
+    
+    VoIP telephony provider
+  </Card>
+  
+  <Card title="Dandemutande" icon="phone">
+    **Prefix:** `8612`
+    
+    Internet telephony services
+  </Card>
+  
+  <Card title="Liquid" icon="phone">
+    **Prefix:** `8677`
+    
+    Major African data & voice provider
+  </Card>
+  
+  <Card title="Powertel" icon="phone">
+    **Prefix:** `8611`
+    
+    ZESA telecommunications division
+  </Card>
+  
+  <Card title="Telco" icon="phone">
+    **Prefix:** `8683`
+    
+    VoIP services
+  </Card>
+  
+  <Card title="TelOne VoIP" icon="phone">
+    **Prefix:** `8688`
+    
+    Internet telephony (separate from landlines)
+  </Card>
+  
+  <Card title="Zarnet" icon="phone">
+    **Prefix:** `8622`
+    
+    VoIP provider
+  </Card>
+</CardGroup>
+
+---
+
+## Pattern Structure
+
+All Zimbabwe VoIP numbers follow this structure:
+
+<Steps>
+  <Step title="Country Code (Optional)">
+    `+263` or `263` or `0`
+  </Step>
+  
+  <Step title="VoIP Identifier">
+    `86` (indicates VoIP service)
+  </Step>
+  
+  <Step title="Provider Code">
+    2 digits identifying the specific provider:
+    - `44` - Africom
+    - `12` - Dandemutande
+    - `77` - Liquid
+    - `11` - Powertel
+    - `83` - Telco
+    - `88` - TelOne
+    - `22` - Zarnet
+  </Step>
+  
+  <Step title="Subscriber Number">
+    6 additional digits
+  </Step>
+</Steps>
+
+**Total Length:** 10 digits (without country code) or 13 digits (with `+263`)
+
+---
+
+## Complete Example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void validateVoipNumber(String number) {
+  // Check specific provider
+  if (LocalRegex.isLiquid(number)) {
+    print('Liquid VoIP number');
+  } else if (LocalRegex.isPowertel(number)) {
+    print('Powertel VoIP number');
+  } else if (LocalRegex.isTelone(number)) {
+    print('TelOne VoIP number');
+  } else if (LocalRegex.isAfricom(number)) {
+    print('Africom VoIP number');
+  } else if (LocalRegex.isDandemutande(number)) {
+    print('Dandemutande VoIP number');
+  } else if (LocalRegex.isTelco(number)) {
+    print('Telco VoIP number');
+  } else if (LocalRegex.isZarnet(number)) {
+    print('Zarnet VoIP number');
+  }
+  
+  // Or check if it's any Zimbabwe VoIP
+  if (LocalRegex.isZimVoip(number)) {
+    print('Valid Zimbabwe VoIP number');
+  } else {
+    print('Not a Zimbabwe VoIP number');
+  }
+}
+
+// Example usage
+void main() {
+  final numbers = [
+    '0864412345',  // Africom
+    '0867712345',  // Liquid
+    '0868812345',  // TelOne VoIP
+    '0771234567',  // Mobile (not VoIP)
+  ];
+  
+  for (final number in numbers) {
+    validateVoipNumber(number);
+  }
+}
+```
+
+---
+
+## Best Practices
+
+<Note>
+  **Use Specific Validators**: When you know the expected VoIP provider, use the specific validation method (e.g., `isLiquid()`) for stricter validation.
+</Note>
+
+<Note>
+  **Flexible Input**: All VoIP validation methods accept numbers with or without country code prefixes (`0`, `263`, `+263`).
+</Note>
+
+<Warning>
+  **VoIP vs Landline**: TelOne has both landline numbers (validated by `isZimLandline()`) and VoIP numbers (validated by `isTelone()`). Make sure to use the correct validator based on the number type.
+</Warning>
+
+---
+
+## Quick Reference Table
+
+| Provider | Prefix | Method | Example |
+|----------|--------|--------|----------|
+| Africom | 8644 | `isAfricom()` | 0864412345 |
+| Dandemutande | 8612 | `isDandemutande()` | 0861212345 |
+| Liquid | 8677 | `isLiquid()` | 0867712345 |
+| Powertel | 8611 | `isPowertel()` | 0861112345 |
+| Telco | 8683 | `isTelco()` | 0868312345 |
+| TelOne | 8688 | `isTelone()` | 0868812345 |
+| Zarnet | 8622 | `isZarnet()` | 0862212345 |
+| Any VoIP | 86xx | `isZimVoip()` | Any of above |

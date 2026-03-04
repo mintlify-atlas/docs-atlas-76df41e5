@@ -1,0 +1,469 @@
+---
+title: "General Validation"
+description: "Validate common data types including emails, passwords, URLs, dates, and IP addresses"
+---
+
+## Overview
+
+LocalRegex provides general-purpose validation methods for common data types used across applications. These validators work with standard formats and are not Zimbabwe-specific.
+
+## Email Validation
+
+### isEmail()
+
+Validates email address format.
+
+<ParamField path="value" type="String" required>
+  The email address to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid email format, `false` otherwise
+
+### Format Requirements
+
+<Steps>
+  <Step title="Local Part">
+    Letters, numbers, and common special characters are allowed before the @ symbol
+  </Step>
+  
+  <Step title="@ Symbol">
+    Required separator between local and domain parts
+  </Step>
+  
+  <Step title="Domain">
+    Alphanumeric characters followed by dot
+  </Step>
+  
+  <Step title="TLD">
+    At least one top-level domain (can have multiple, e.g., `.co.uk`)
+  </Step>
+</Steps>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Emails
+LocalRegex.isEmail('user@example.com');           // true
+LocalRegex.isEmail('john.doe@company.co.uk');     // true
+LocalRegex.isEmail('test+tag@domain.org');        // true
+LocalRegex.isEmail('user_123@test-site.com');     // true
+LocalRegex.isEmail('name@subdomain.example.com'); // true
+```
+
+```dart Invalid Emails
+LocalRegex.isEmail('invalid.email');         // false (no @)
+LocalRegex.isEmail('@example.com');          // false (no local part)
+LocalRegex.isEmail('user@');                 // false (no domain)
+LocalRegex.isEmail('user @example.com');     // false (space)
+LocalRegex.isEmail('user@example');          // false (no TLD)
+```
+</CodeGroup>
+
+---
+
+## Password Validation
+
+### isPassword()
+
+Validates password strength according to common security requirements.
+
+<ParamField path="password" type="String" required>
+  The password to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if password meets requirements, `false` otherwise
+
+**Pattern:** `^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[!@#$&*~^%()+=|]).{8,}$`
+
+### Password Requirements
+
+<CardGroup cols={2}>
+  <Card title="Minimum Length" icon="ruler">
+    At least **8 characters** long
+  </Card>
+  
+  <Card title="Uppercase" icon="a">
+    At least **1 uppercase letter** (A-Z)
+  </Card>
+  
+  <Card title="Lowercase" icon="a">
+    At least **1 lowercase letter** (a-z)
+  </Card>
+  
+  <Card title="Number" icon="hashtag">
+    At least **1 digit** (0-9)
+  </Card>
+  
+  <Card title="Special Character" icon="asterisk">
+    At least **1 special character**
+    
+    `! @ # $ & * ~ ^ % ( ) + = |`
+  </Card>
+</CardGroup>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Passwords
+LocalRegex.isPassword('Pass123!');          // true
+LocalRegex.isPassword('MyP@ssw0rd');        // true
+LocalRegex.isPassword('Secure#Pass123');    // true
+LocalRegex.isPassword('C0mpl3x&Str0ng!');   // true
+```
+
+```dart Invalid Passwords
+LocalRegex.isPassword('password');          // false (no uppercase, digit, special)
+LocalRegex.isPassword('PASSWORD123!');      // false (no lowercase)
+LocalRegex.isPassword('Password123');       // false (no special char)
+LocalRegex.isPassword('Pass!');             // false (too short)
+LocalRegex.isPassword('Pass 123!');         // false (contains space)
+```
+</CodeGroup>
+
+<Warning>
+  **Security Note**: While this validator enforces basic password requirements, consider additional checks like password history, common password lists, and user-specific patterns for production applications.
+</Warning>
+
+---
+
+## URL Validation
+
+### isUrl()
+
+Validates HTTP and HTTPS URLs.
+
+<ParamField path="url" type="String" required>
+  The URL to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid URL format, `false` otherwise
+
+**Pattern:** `https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)`
+
+### Format Requirements
+
+<Steps>
+  <Step title="Protocol">
+    Must start with `http://` or `https://`
+  </Step>
+  
+  <Step title="Subdomain (Optional)">
+    Can include `www.` or other subdomains
+  </Step>
+  
+  <Step title="Domain">
+    Alphanumeric domain name (1-256 characters)
+  </Step>
+  
+  <Step title="TLD">
+    Top-level domain (1-6 characters)
+  </Step>
+  
+  <Step title="Path/Query (Optional)">
+    Can include paths, query strings, and fragments
+  </Step>
+</Steps>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid URLs
+LocalRegex.isUrl('https://example.com');                    // true
+LocalRegex.isUrl('http://www.example.com');                 // true
+LocalRegex.isUrl('https://subdomain.example.co.uk');        // true
+LocalRegex.isUrl('https://example.com/path/to/page');       // true
+LocalRegex.isUrl('https://example.com?query=value&id=123'); // true
+LocalRegex.isUrl('https://example.com/page#section');       // true
+```
+
+```dart Invalid URLs
+LocalRegex.isUrl('example.com');              // false (no protocol)
+LocalRegex.isUrl('ftp://example.com');        // false (wrong protocol)
+LocalRegex.isUrl('https://');                 // false (no domain)
+LocalRegex.isUrl('https://example');          // false (no TLD)
+LocalRegex.isUrl('not a url');                // false
+```
+</CodeGroup>
+
+---
+
+## Date Validation
+
+### isDate()
+
+Validates date format and checks for valid dates (including leap years).
+
+<ParamField path="date" type="String" required>
+  The date string to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid date, `false` otherwise
+
+### Supported Formats
+
+The validator accepts dates with various separators:
+- `/` (slash): `31/12/2024`
+- `-` (hyphen): `31-12-2024`
+- `.` (dot): `31.12.2024`
+
+### Date Validation Rules
+
+<Tabs>
+  <Tab title="Day Ranges">
+    - **31 days**: Jan, Mar, May, Jul, Aug, Oct, Dec
+    - **30 days**: Apr, Jun, Sep, Nov
+    - **29 days**: Feb (leap years)
+    - **28 days**: Feb (non-leap years)
+  </Tab>
+  
+  <Tab title="Leap Years">
+    The validator correctly handles leap year rules:
+    - Years divisible by 4 are leap years
+    - Except years divisible by 100 (not leap)
+    - Unless divisible by 400 (leap year)
+    
+    Examples:
+    - 2024: Leap year (÷ 4)
+    - 2000: Leap year (÷ 400)
+    - 1900: Not leap (÷ 100, not ÷ 400)
+  </Tab>
+  
+  <Tab title="Year Range">
+    Supports years from **1600** onwards
+  </Tab>
+</Tabs>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Dates
+LocalRegex.isDate('31/12/2024');    // true
+LocalRegex.isDate('29/02/2024');    // true (leap year)
+LocalRegex.isDate('15-06-2023');    // true
+LocalRegex.isDate('01.01.2000');    // true
+LocalRegex.isDate('30/04/2024');    // true
+```
+
+```dart Invalid Dates
+LocalRegex.isDate('32/12/2024');    // false (day > 31)
+LocalRegex.isDate('29/02/2023');    // false (not leap year)
+LocalRegex.isDate('31/04/2024');    // false (April has 30 days)
+LocalRegex.isDate('00/01/2024');    // false (day = 0)
+LocalRegex.isDate('15/13/2024');    // false (month > 12)
+LocalRegex.isDate('2024-12-31');    // false (wrong format order)
+```
+</CodeGroup>
+
+<Note>
+  The date validator expects **day/month/year** format (European/UK style), not month/day/year (US style).
+</Note>
+
+---
+
+## IP Address Validation
+
+### isIpAddress()
+
+Validates IPv4 address format.
+
+<ParamField path="ipAddress" type="String" required>
+  The IP address to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if valid IPv4 address, `false` otherwise
+
+**Pattern:** `^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`
+
+### IPv4 Format Requirements
+
+<Steps>
+  <Step title="Four Octets">
+    Four numbers separated by dots
+  </Step>
+  
+  <Step title="Octet Range">
+    Each octet must be between **0** and **255**
+  </Step>
+  
+  <Step title="Valid Ranges">
+    - `0-9`: Single digit
+    - `10-99`: Two digits
+    - `100-199`: Three digits (1xx)
+    - `200-249`: Three digits (2xx)
+    - `250-255`: Three digits (25x)
+  </Step>
+</Steps>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid IP Addresses
+LocalRegex.isIpAddress('192.168.1.1');      // true
+LocalRegex.isIpAddress('10.0.0.1');         // true
+LocalRegex.isIpAddress('255.255.255.255');  // true
+LocalRegex.isIpAddress('0.0.0.0');          // true
+LocalRegex.isIpAddress('172.16.254.1');     // true
+```
+
+```dart Invalid IP Addresses
+LocalRegex.isIpAddress('256.1.1.1');        // false (256 > 255)
+LocalRegex.isIpAddress('192.168.1');        // false (only 3 octets)
+LocalRegex.isIpAddress('192.168.1.1.1');    // false (5 octets)
+LocalRegex.isIpAddress('192.168.-1.1');     // false (negative)
+LocalRegex.isIpAddress('192.168.1.abc');    // false (letters)
+```
+</CodeGroup>
+
+<Note>
+  This validator only supports **IPv4** addresses. IPv6 addresses are not currently supported.
+</Note>
+
+---
+
+## Complete Example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void validateUserInput({
+  required String email,
+  required String password,
+  required String website,
+  required String birthDate,
+  required String ipAddress,
+}) {
+  // Validate email
+  if (!LocalRegex.isEmail(email)) {
+    print('Invalid email address');
+    return;
+  }
+  
+  // Validate password strength
+  if (!LocalRegex.isPassword(password)) {
+    print('Password must be at least 8 characters with uppercase, '
+          'lowercase, number, and special character');
+    return;
+  }
+  
+  // Validate website URL
+  if (!LocalRegex.isUrl(website)) {
+    print('Invalid URL format');
+    return;
+  }
+  
+  // Validate birth date
+  if (!LocalRegex.isDate(birthDate)) {
+    print('Invalid date format (use DD/MM/YYYY)');
+    return;
+  }
+  
+  // Validate IP address
+  if (!LocalRegex.isIpAddress(ipAddress)) {
+    print('Invalid IPv4 address');
+    return;
+  }
+  
+  print('All validations passed!');
+}
+
+// Example usage
+void main() {
+  validateUserInput(
+    email: 'user@example.com',
+    password: 'Secure123!',
+    website: 'https://example.com',
+    birthDate: '15/06/1990',
+    ipAddress: '192.168.1.1',
+  );
+}
+```
+
+---
+
+## Validation Summary
+
+<CardGroup cols={2}>
+  <Card title="Email" icon="envelope">
+    **Method:** `isEmail()`
+    
+    Format: `user@domain.com`
+    
+    Validates standard email format
+  </Card>
+  
+  <Card title="Password" icon="lock">
+    **Method:** `isPassword()`
+    
+    Requirements: 8+ chars, upper, lower, digit, special
+    
+    Strong password validation
+  </Card>
+  
+  <Card title="URL" icon="link">
+    **Method:** `isUrl()`
+    
+    Format: `https://example.com`
+    
+    HTTP/HTTPS URLs only
+  </Card>
+  
+  <Card title="Date" icon="calendar">
+    **Method:** `isDate()`
+    
+    Format: `DD/MM/YYYY`
+    
+    Validates real dates including leap years
+  </Card>
+  
+  <Card title="IP Address" icon="network-wired">
+    **Method:** `isIpAddress()`
+    
+    Format: `192.168.1.1`
+    
+    IPv4 addresses (0-255 per octet)
+  </Card>
+</CardGroup>
+
+---
+
+## Best Practices
+
+<Note>
+  **Client-Side Only**: These validators are for client-side validation. Always validate on the server side as well for security.
+</Note>
+
+<Note>
+  **User Feedback**: Provide clear error messages when validation fails, explaining what format is expected.
+</Note>
+
+<Warning>
+  **Password Storage**: Never store passwords in plain text. Always use proper hashing algorithms (bcrypt, argon2, etc.) on the server side.
+</Warning>
+
+---
+
+## Password Generation
+
+LocalRegex also provides a password generation utility:
+
+```dart
+// Generate a random password that meets validation requirements
+final password = LocalRegex.generatePassword(length: 12);
+
+print(password);  // e.g., "aB3!xY9@mN2#"
+
+// Verify it passes validation
+assert(LocalRegex.isPassword(password));
+```
+
+<ParamField path="length" type="int" default="12">
+  The desired password length (minimum 8 recommended)
+</ParamField>
+
+The generated password will always include:
+- Lowercase letters
+- Uppercase letters
+- Numbers
+- Special characters
+
+And will pass the `isPassword()` validation.

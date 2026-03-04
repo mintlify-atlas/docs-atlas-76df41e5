@@ -1,80 +1,204 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get started with LocalRegex by learning the basics of validation and formatting.
 ---
 
-## Get started in three steps
+This guide will walk you through the most common use cases for LocalRegex. You'll learn how to validate mobile numbers, national IDs, emails, and format phone numbers.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Make sure you have [installed LocalRegex](/installation) in your project before continuing.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+<Steps>
 
-### Step 2: Deploy your changes
+<Step title="Import LocalRegex">
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+First, import the LocalRegex package in your Dart file:
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+```dart
+import 'package:localregex/localregex.dart';
+```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+</Step>
 
-### Step 3: Go live
+<Step title="Validate mobile numbers">
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+LocalRegex provides multiple methods for validating Zimbabwean mobile numbers:
+
+```dart
+// Validate any Zimbabwean mobile number (Econet, NetOne, or Telecel)
+final isValidMobile = LocalRegex.isZimMobile('0777123456');
+print(isValidMobile); // true
+
+// Validate specific network providers
+final isEconet = LocalRegex.isEconet('0777123456');
+print(isEconet); // true
+
+final isNetone = LocalRegex.isNetone('0712345678');
+print(isNetone); // true
+
+final isTelecel = LocalRegex.isTelecel('0733456789');
+print(isTelecel); // true
+```
+
+<Note>
+  Use `LocalRegex.isZimMobile()` when you need to validate any Zimbabwean mobile number regardless of the provider. For international numbers, use `LocalRegex.isValidMobile()`.
+</Note>
+
+</Step>
+
+<Step title="Validate national IDs and other documents">
+
+Validate various Zimbabwe-specific identification documents:
+
+```dart
+// Validate national ID
+final isValidID = LocalRegex.isZimID('63-123456A78');
+print(isValidID); // true
+
+// Validate passport number
+final isValidPassport = LocalRegex.isZimPassport('AN123456');
+print(isValidPassport); // true
+
+// Validate driver's license
+final isValidLicense = LocalRegex.isZimDriversLicence('12345AB');
+print(isValidLicense); // true
+
+// Validate vehicle number plate
+final isValidPlate = LocalRegex.isZimNumberPlate('ABC-1234');
+print(isValidPlate); // true
+```
+
+</Step>
+
+<Step title="Validate emails and other common patterns">
+
+LocalRegex also supports validation for common patterns like emails, URLs, and passwords:
+
+```dart
+// Validate email address
+final isValidEmail = LocalRegex.isEmail('user@example.com');
+print(isValidEmail); // true
+
+// Validate URL
+final isValidUrl = LocalRegex.isUrl('https://www.example.com');
+print(isValidUrl); // true
+
+// Validate password (min 8 chars, 1 uppercase, 1 number, 1 special char)
+final isValidPassword = LocalRegex.isPassword('MyP@ssw0rd');
+print(isValidPassword); // true
+```
+
+</Step>
+
+<Step title="Format phone numbers">
+
+Convert phone numbers between different formats using the `formatNumber()` extension method:
+
+```dart
+// Format to regular format (0777123456)
+final regular = '263777123456'.formatNumber(
+  formatType: FormatType.regular,
+);
+print(regular); // 0777123456
+
+// Format to country code (263777123456)
+final countryCode = '0777123456'.formatNumber(
+  formatType: FormatType.countryCode,
+);
+print(countryCode); // 263777123456
+
+// Format to country code with plus (+263777123456)
+final countryCodePlus = '0777123456'.formatNumber(
+  formatType: FormatType.countryCodePlus,
+);
+print(countryCodePlus); // +263777123456
+```
+
+<Note>
+  The `formatNumber()` method automatically handles phone numbers with spaces, dashes, or parentheses by cleaning them before formatting.
+</Note>
+
+</Step>
+
+<Step title="Format national IDs">
+
+Format national IDs to match the official document format:
+
+```dart
+// Format national ID to proper format (11-223344 K 55)
+final formattedID = '11223344K55'.formatID(
+  formatType: IdFormatType.proper,
+);
+print(formattedID); // 11-223344 K 55
+
+// Format without spaces
+final noSpaces = '11-223344 K 55'.formatID(
+  formatType: IdFormatType.noSpace,
+);
+print(noSpaces); // 11223344K55
+```
+
+</Step>
+
+</Steps>
+
+## Complete example
+
+Here's a complete example that demonstrates multiple validation and formatting features:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void main() {
+  // Validate different types of data
+  print('Mobile validation:');
+  print(LocalRegex.isZimMobile('0777123456')); // true
+  print(LocalRegex.isEconet('0777123456')); // true
+  
+  print('\nDocument validation:');
+  print(LocalRegex.isZimID('63-123456A78')); // true
+  print(LocalRegex.isZimPassport('AN123456')); // true
+  
+  print('\nCommon pattern validation:');
+  print(LocalRegex.isEmail('user@example.com')); // true
+  print(LocalRegex.isUrl('https://example.com')); // true
+  
+  print('\nPhone number formatting:');
+  final phoneNumber = '0777123456';
+  print(phoneNumber.formatNumber(
+    formatType: FormatType.regular,
+  )); // 0777123456
+  print(phoneNumber.formatNumber(
+    formatType: FormatType.countryCode,
+  )); // 263777123456
+  print(phoneNumber.formatNumber(
+    formatType: FormatType.countryCodePlus,
+  )); // +263777123456
+  
+  print('\nNational ID formatting:');
+  final nationalID = '11223344K55';
+  print(nationalID.formatID(
+    formatType: IdFormatType.proper,
+  )); // 11-223344 K 55
+}
+```
 
 ## Next steps
 
-Now that you have your docs running, explore these key features:
+Now that you understand the basics, explore more advanced features:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Mobile number validation" icon="mobile" href="/validation/mobile-numbers">
+    Learn about all mobile number validation methods
+  </Card>
+  <Card title="Document validation" icon="id-card" href="/validation/identity-documents">
+    Validate IDs, passports, licenses, and number plates
+  </Card>
+  <Card title="Phone number formatting" icon="phone" href="/formatting/phone-numbers">
+    Advanced phone number formatting options
+  </Card>
+  <Card title="VoIP validation" icon="phone-volume" href="/validation/voip-providers">
+    Validate VoIP numbers from various providers
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

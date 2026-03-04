@@ -1,0 +1,304 @@
+---
+title: Migration Guide
+description: Guide for migrating between major versions of LocalRegex
+---
+
+## Migrating from v3 to v4
+
+Version 4.0.0 introduced several breaking changes to improve the API and make it more consistent. This guide will help you update your code.
+
+<Note>
+  Version 4.0.0 is a major release with breaking changes. Please review all changes carefully before upgrading.
+</Note>
+
+### Breaking Changes Overview
+
+1. **All methods are now static** - No need to instantiate LocalRegex
+2. **Method names have changed** - More descriptive naming convention
+3. **FormatTypes renamed to FormatType** - Enum name simplified
+4. **Format Number is now a String extension** - More idiomatic Dart usage
+5. **PasswordTextFormField widget removed** - Library focused on validation logic only
+
+### Static Methods
+
+In v3, all methods became static. In v4, this continues with improved method names.
+
+**Before (v3):**
+```dart
+// Methods were already static in v3
+LocalRegex.isValidZimMobile('0771234567');
+LocalRegex.isValidPassword('MyP@ssw0rd');
+```
+
+**After (v4):**
+```dart
+// Method names simplified
+LocalRegex.isZimMobile('0771234567');
+LocalRegex.isPassword('MyP@ssw0rd');
+```
+
+### Method Name Changes
+
+Method names have been updated to be more concise while remaining descriptive.
+
+<CodeGroup>
+```dart v3 (Old)
+// Mobile validation
+LocalRegex.isValidZimMobile(phoneNumber);
+
+// Email validation
+LocalRegex.isValidEmail(email);
+
+// Password validation
+LocalRegex.isValidPassword(password);
+
+// National ID
+LocalRegex.isValidZimID(idNumber);
+
+// Passport
+LocalRegex.isValidZimPassport(passport);
+```
+
+```dart v4 (New)
+// Mobile validation
+LocalRegex.isZimMobile(phoneNumber);
+
+// Email validation
+LocalRegex.isEmail(email);
+
+// Password validation
+LocalRegex.isPassword(password);
+
+// National ID
+LocalRegex.isZimID(idNumber);
+
+// Passport
+LocalRegex.isZimPassport(passport);
+```
+</CodeGroup>
+
+### FormatType Enum
+
+The enum name changed from `FormatTypes` (plural) to `FormatType` (singular).
+
+**Before (v3):**
+```dart
+import 'package:localregex/localregex.dart';
+
+final formatted = formatNumber(
+  '0771234567',
+  FormatTypes.countryCode, // Plural
+);
+```
+
+**After (v4):**
+```dart
+import 'package:localregex/localregex.dart';
+
+final formatted = '0771234567'.formatNumber(
+  formatType: FormatType.countryCode, // Singular, named parameter
+);
+```
+
+### Phone Number Formatting
+
+Phone number formatting is now a String extension with named parameters.
+
+<CodeGroup>
+```dart v3 (Old)
+import 'package:localregex/localregex.dart';
+
+// Function-based approach
+final formatted = formatNumber(
+  '0771234567',
+  FormatTypes.countryCodePlus,
+);
+```
+
+```dart v4 (New)
+import 'package:localregex/localregex.dart';
+
+// Extension method with named parameters
+final formatted = '0771234567'.formatNumber(
+  formatType: FormatType.countryCodePlus,
+);
+
+// With optional cleaning parameter
+final cleaned = '(077) 123-4567'.formatNumber(
+  formatType: FormatType.regular,
+  cleanNumber: true, // New parameter
+);
+```
+</CodeGroup>
+
+### PasswordTextFormField Removed
+
+The `PasswordTextFormField` widget has been removed. The library now focuses purely on validation logic.
+
+**Before (v3):**
+```dart
+import 'package:localregex/localregex.dart';
+
+// Widget was included
+PasswordTextFormField(
+  controller: passwordController,
+  validator: (value) {
+    if (!LocalRegex.isValidPassword(value)) {
+      return 'Invalid password';
+    }
+    return null;
+  },
+);
+```
+
+**After (v4):**
+```dart
+import 'package:localregex/localregex.dart';
+import 'package:flutter/material.dart';
+
+// Use standard TextFormField with LocalRegex validation
+TextFormField(
+  controller: passwordController,
+  obscureText: true,
+  validator: (value) {
+    if (value == null || !LocalRegex.isPassword(value)) {
+      return 'Invalid password';
+    }
+    return null;
+  },
+);
+```
+
+### Complete Migration Example
+
+Here's a complete example showing how to migrate a registration form:
+
+<CodeGroup>
+```dart v3 (Old)
+import 'package:localregex/localregex.dart';
+
+class RegistrationFormV3 {
+  String? validateEmail(String? value) {
+    if (value == null || !LocalRegex.isValidEmail(value)) {
+      return 'Invalid email';
+    }
+    return null;
+  }
+
+  String? validatePhone(String? value) {
+    if (value == null || !LocalRegex.isValidZimMobile(value)) {
+      return 'Invalid phone number';
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || !LocalRegex.isValidPassword(value)) {
+      return 'Invalid password';
+    }
+    return null;
+  }
+
+  String formatPhoneNumber(String phone) {
+    return formatNumber(phone, FormatTypes.countryCodePlus);
+  }
+}
+```
+
+```dart v4 (New)
+import 'package:localregex/localregex.dart';
+
+class RegistrationFormV4 {
+  String? validateEmail(String? value) {
+    if (value == null || !LocalRegex.isEmail(value)) {
+      return 'Invalid email';
+    }
+    return null;
+  }
+
+  String? validatePhone(String? value) {
+    if (value == null || !LocalRegex.isZimMobile(value)) {
+      return 'Invalid phone number';
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || !LocalRegex.isPassword(value)) {
+      return 'Invalid password';
+    }
+    return null;
+  }
+
+  String formatPhoneNumber(String phone) {
+    return phone.formatNumber(
+      formatType: FormatType.countryCodePlus,
+    )!;
+  }
+}
+```
+</CodeGroup>
+
+### ID Formatting (v4.0.1+)
+
+Starting from v4.0.1, national ID formatting became available as a String extension.
+
+```dart
+import 'package:localregex/localregex.dart';
+
+// Format national ID with proper spacing
+final formatted = '631234567A12'.formatID(
+  formatType: IdFormatType.proper,
+);
+// Result: 63-1234567 A 12
+
+// Format without spaces
+final noSpace = '63-1234567 A 12'.formatID(
+  formatType: IdFormatType.noSpace,
+);
+// Result: 631234567A12
+```
+
+### New Features in v4
+
+While migrating, you can also take advantage of new features:
+
+#### Password Generation (v4.0.6+)
+
+```dart
+// Generate secure passwords
+final password = LocalRegex.generatePassword(length: 16);
+```
+
+#### Landline Validation (v4.0.2+)
+
+```dart
+// Validate Zimbabwean landline numbers
+final isLandline = LocalRegex.isZimLandline('0242790122');
+```
+
+#### Student ID Validation (v4.0.5+)
+
+```dart
+// Validate student IDs for different institutions
+final isHitStudent = LocalSchools.hit.isStudent('H180202M');
+final isTeloneStudent = LocalSchools.telone.isStudent('T2216313T');
+```
+
+## Migration Checklist
+
+Use this checklist to ensure a smooth migration:
+
+- [ ] Update all method names (remove `Valid` prefix)
+- [ ] Change `FormatTypes` to `FormatType`
+- [ ] Convert `formatNumber()` calls to String extension with named parameters
+- [ ] Replace `PasswordTextFormField` with standard `TextFormField`
+- [ ] Add `cleanNumber` parameter where needed for formatted phone inputs
+- [ ] Update imports if needed
+- [ ] Test all validation logic
+- [ ] Update any wrapper functions or utilities
+- [ ] Review error handling for formatting methods
+
+<Info>
+  If you encounter any issues during migration, please check the [changelog](/changelog) for detailed version history or open an issue on GitHub.
+</Info>

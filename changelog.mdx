@@ -1,0 +1,190 @@
+---
+title: Changelog
+description: Version history and release notes for LocalRegex
+---
+
+All notable changes to the LocalRegex library are documented here.
+
+## 4.0.7
+
+- **Fix:** Generate password with all characters
+
+## 4.0.6
+
+- **New:** Added `LocalRegex.generatePassword()` method for generating secure random passwords
+
+```dart
+final password = LocalRegex.generatePassword(length: 16);
+```
+
+## 4.0.5
+
+- **Update:** Updated Date regex for better validation
+- **New:** Regex for Student ID formats added
+
+## 4.0.4
+
+- **Fix:** Avoid duplication of ID characters when formatting
+
+## 4.0.3
+
+- **Fix:** Allow lowercase values to be validated in IDs
+
+## 4.0.2
+
+- **New:** Added functionality to check if landline number is valid
+
+```dart
+LocalRegex.isZimLandline('0242790122')
+```
+
+## 4.0.1+4
+
+- **New:** Added additional parameter to `formatNumber` extension - you can now optionally choose to clean phone number if it's formatted (defaults to `true`)
+
+```dart
+final p = '(077) 612-3098'.formatNumber(
+  formatType: FormatType.countryCode,
+  cleanNumber: true,
+)
+
+// Result: (077) 612-3098 -> 0776123098
+```
+
+- Minor changes
+
+## 4.0.1+3
+
+- **Fix:** Update SDK dependency version
+
+## 4.0.1+2
+
+- **New:** Format IDs with 2 new formatting types
+- **Breaking Update:** Format type on phone numbers is now a named parameter
+
+## 4.0.1+1
+
+- **Fix:** Imports
+
+## 4.0.1
+
+- **New:** More national identity number tests
+- **New:** New extension to allow formatting of a string to proper national identity number structure
+
+## 4.0.0
+
+<Warning>
+  This version brings **breaking changes** which need to be carefully looked into.
+</Warning>
+
+- **Breaking:** Most of the method names have been changed (removed `Valid` prefix)
+- **Breaking:** `FormatTypes` renamed to `FormatType` (singular)
+- **Breaking:** Format Number is now a String extension
+- **Breaking:** Removed `PasswordTextFormField` widget
+- **License:** Usage of MIT License
+
+See the [Migration Guide](/migration-guide) for detailed upgrade instructions.
+
+## 3.0.5
+
+- **New:** Dates regex - Matches `YYYY-MM-DD` or `YYYY/MM/DD` formats
+
+## 3.0.4
+
+- **New:** URL Regex
+
+## 3.0.3
+
+- **New:** VoIP numbers validation
+
+## 3.0.2+4
+
+- **Improvement:** Regex consistency
+
+## 3.0.2+3
+
+- **Update:** Password regex - Add more special characters
+
+## 3.0.2+2
+
+- **Fix:** PasswordTextFormField - dispose controller
+
+## 3.0.2+1
+
+- **Update:** PasswordTextFormField styling
+
+## 3.0.2
+
+- **New:** PasswordTextFormField widget
+
+## 3.0.1
+
+- **Fix:** Fixed password regex
+
+## 3.0.0+1
+
+- **Docs:** Updated README.md
+- **Docs:** Documentation improvements
+
+## 3.0.0
+
+<Warning>
+  This version brings **breaking changes** which need to be carefully looked into.
+</Warning>
+
+- **Breaking:** All methods are now static - no more declaration and initialization needed
+- **Breaking:** Changes in naming of methods (e.g., `isZwMobile` => `isValidZimMobile`) to make them more descriptive
+- **New:** Password validation is now available
+
+```dart
+LocalRegex.isValidPassword('MyP@ssw0rd123');
+```
+
+## 2.0.3+1
+
+- **Fix:** Fixed minor bug for numbers formatted in weird ways
+
+## 2.0.3
+
+- **Improvement:** Properly formatted code
+
+## 2.0.2
+
+- **Fix:** Fixed email regex bug
+
+## 2.0.1+1
+
+- **Improvement:** Code formatting
+
+## 2.0.1
+
+- **Update:** Allow 6 or 7 national ID numbers (old and new ID numbers)
+
+## 2.0.0
+
+- **New:** Mobile number formatting
+- **Migration:** Null safety migration
+
+## 1.0.2
+
+- **Fix:** Fixed + sign bug on mobile numbers
+- **Fix:** Removed duplicate characters on email validation
+
+## 1.0.1
+
+- **Improvement:** Improved email validation
+
+## 1.0.0
+
+- **Improvement:** Improved for easy usability
+- **Breaking:** Updated/totally changed assertion methods
+- **New:** New method to assert all mobile numbers at once
+- **New:** Assertion methods: `isEmail`, `isNetone`, `isTelecel`, `isEconet`, `isZwMobile`, `isZw` (for National ID), `isZwPassport`, `isZwNumberPlate`
+
+## 0.0.1
+
+- **Release:** First release of LocalRegex
+
+<Info>
+  For the most up-to-date information and source code, visit the [LocalRegex GitHub repository](https://github.com/ModestNerd/localregex).
+</Info>

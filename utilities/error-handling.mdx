@@ -1,0 +1,329 @@
+---
+title: "Error handling"
+description: "Handle LocalRegex exceptions when working with phone numbers and national IDs"
+---
+
+## Overview
+
+LocalRegex uses the `LocalRegexException` class to report errors when validation or formatting operations fail. This provides structured error handling for your application.
+
+## LocalRegexException class
+
+```dart
+class LocalRegexException implements Exception {
+  LocalRegexException(this.message);
+  
+  final String message;
+  
+  @override
+  String toString() {
+    return 'LocalRegexException: $message';
+  }
+}
+```
+
+### Properties
+
+<ParamField path="message" type="String">
+  A descriptive error message explaining what went wrong
+</ParamField>
+
+## When exceptions are thrown
+
+LocalRegex throws `LocalRegexException` in the following scenarios:
+
+<AccordionGroup>
+  <Accordion title="formatNumber() - Invalid phone number">
+    Thrown when attempting to format a phone number that doesn't match any valid Zimbabwean phone number pattern (mobile, VoIP, or landline).
+    
+    **Error message**: `"Phone number is not valid!"`
+  </Accordion>
+  
+  <Accordion title="formatID() - Invalid national ID">
+    Thrown when attempting to format a national ID that doesn't match the valid Zimbabwean national ID pattern.
+    
+    **Error message**: `"National ID is not valid"`
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  The `formatNumber()` and `formatID()` methods throw exceptions for invalid input. Always validate input first or use try-catch blocks to handle errors gracefully.
+</Warning>
+
+## Basic error handling
+
+### Handling phone number formatting errors
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void main() {
+  final phoneNumber = '077721338'; // Invalid: too short
+  
+  try {
+    final formatted = phoneNumber.formatNumber(
+      formatType: FormatType.countryCode,
+    );
+    print('Formatted: $formatted');
+  } on LocalRegexException catch (e) {
+    print('Error: ${e.message}');
+    // Output: Error: Phone number is not valid!
+  }
+}
+```
+
+### Handling national ID formatting errors
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void main() {
+  final nationalId = '12345678'; // Invalid format
+  
+  try {
+    final formatted = nationalId.formatID();
+    print('Formatted: $formatted');
+  } on LocalRegexException catch (e) {
+    print('Error: ${e.message}');
+    // Output: Error: National ID is not valid
+  }
+}
+```
+
+## Best practices
+
+### Validate before formatting
+
+Prevent exceptions by validating input before attempting to format:
+
+```dart
+import 'package:localregex/localregex.dart';
+
+String? safeFormatNumber(String phoneNumber) {
+  // Validate first
+  if (!LocalRegex.isZimMobile(phoneNumber) && 
+      !LocalRegex.isZimVoip(phoneNumber) &&
+      !LocalRegex.isZimLandline(phoneNumber)) {
+    return null; // Invalid phone number
+  }
+  
+  // Safe to format
+  return phoneNumber.formatNumber(
+    formatType: FormatType.countryCode,
+  );
+}
+
+void main() {
+  final result = safeFormatNumber('0777213388');
+  if (result != null) {
+    print('Formatted: $result');
+  } else {
+    print('Invalid phone number');
+  }
+}
+```
+
+### Validate national IDs before formatting
+
+```dart
+import 'package:localregex/localregex.dart';
+
+String? safeFormatID(String nationalId) {
+  // Validate first
+  if (!LocalRegex.isZimID(nationalId)) {
+    return null; // Invalid national ID
+  }
+  
+  // Safe to format
+  return nationalId.formatID();
+}
+
+void main() {
+  final result = safeFormatID('75-511218 K44');
+  if (result != null) {
+    print('Formatted: $result');
+    // Output: Formatted: 75-511218 K 44
+  } else {
+    print('Invalid national ID');
+  }
+}
+```
+
+## User input validation
+
+### Form validation example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class PhoneNumberValidator {
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    
+    try {
+      // Attempt to format
+      value.formatNumber(formatType: FormatType.countryCode);
+      return null; // Valid
+    } on LocalRegexException catch (e) {
+      return e.message; // Return error message
+    }
+  }
+}
+
+// Usage in a form
+void submitForm(String phoneNumber) {
+  final error = PhoneNumberValidator.validate(phoneNumber);
+  
+  if (error != null) {
+    print('Validation failed: $error');
+    return;
+  }
+  
+  print('Form submitted successfully');
+}
+```
+
+### National ID validation example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class NationalIDValidator {
+  static String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'National ID is required';
+    }
+    
+    try {
+      // Attempt to format
+      value.formatID();
+      return null; // Valid
+    } on LocalRegexException catch (e) {
+      return e.message; // Return error message
+    }
+  }
+}
+
+// Usage
+void processID(String nationalId) {
+  final error = NationalIDValidator.validate(nationalId);
+  
+  if (error != null) {
+    print('Validation failed: $error');
+    return;
+  }
+  
+  print('ID processed successfully');
+}
+```
+
+## Advanced error handling
+
+### Batch processing with error collection
+
+```dart
+import 'package:localregex/localregex.dart';
+
+class BatchProcessor {
+  static Map<String, dynamic> processPhoneNumbers(List<String> numbers) {
+    final successful = <String>[];
+    final failed = <Map<String, String>>[];
+    
+    for (final number in numbers) {
+      try {
+        final formatted = number.formatNumber(
+          formatType: FormatType.countryCodePlus,
+        );
+        successful.add(formatted!);
+      } on LocalRegexException catch (e) {
+        failed.add({
+          'number': number,
+          'error': e.message,
+        });
+      }
+    }
+    
+    return {
+      'successful': successful,
+      'failed': failed,
+      'total': numbers.length,
+      'successRate': (successful.length / numbers.length * 100).toStringAsFixed(1),
+    };
+  }
+}
+
+void main() {
+  final numbers = [
+    '0777213388',  // Valid
+    '0242790122',  // Valid
+    '12345',       // Invalid
+    '0771234567',  // Valid
+  ];
+  
+  final results = BatchProcessor.processPhoneNumbers(numbers);
+  print('Success rate: ${results['successRate']}%');
+  print('Successful: ${results['successful']}');
+  print('Failed: ${results['failed']}');
+}
+```
+
+<Tip>
+  When processing multiple inputs, collect all errors rather than stopping at the first failure. This provides better user experience by showing all issues at once.
+</Tip>
+
+## Testing exception handling
+
+```dart
+import 'package:localregex/localregex.dart';
+import 'package:test/test.dart';
+
+void main() {
+  group('LocalRegexException', () {
+    test('formatNumber throws exception for invalid number', () {
+      expect(
+        () => '077721338'.formatNumber(formatType: FormatType.countryCode),
+        throwsA(isA<LocalRegexException>()),
+      );
+    });
+    
+    test('exception contains correct message', () {
+      expect(
+        () => '077721338'.formatNumber(formatType: FormatType.countryCode),
+        throwsA(
+          isA<LocalRegexException>().having(
+            (e) => e.message,
+            'message',
+            'Phone number is not valid!',
+          ),
+        ),
+      );
+    });
+    
+    test('formatID throws exception for invalid ID', () {
+      expect(
+        () => '12345'.formatID(),
+        throwsA(isA<LocalRegexException>()),
+      );
+    });
+  });
+}
+```
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Phone number formatting" icon="phone" href="/formatting/phone-numbers">
+    Learn about formatting phone numbers
+  </Card>
+  <Card title="National ID formatting" icon="id-card" href="/formatting/national-ids">
+    Learn about formatting national IDs
+  </Card>
+  <Card title="Phone validation" icon="circle-check" href="/validation/mobile-numbers">
+    Validate phone numbers before formatting
+  </Card>
+  <Card title="National ID validation" icon="shield-check" href="/validation/identity-documents">
+    Validate national IDs before formatting
+  </Card>
+</CardGroup>

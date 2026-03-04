@@ -1,0 +1,344 @@
+---
+title: LocalRegexException
+description: Exception class for handling validation and formatting errors in the LocalRegex library
+---
+
+The `LocalRegexException` class represents exceptions that occur during validation and formatting operations in the LocalRegex library.
+
+## Class Definition
+
+```dart
+class LocalRegexException implements Exception {
+  LocalRegexException(this.message);
+  
+  final String message;
+  
+  @override
+  String toString() {
+    return 'LocalRegexException: $message';
+  }
+}
+```
+
+## Constructor
+
+### LocalRegexException()
+
+Creates a new instance of `LocalRegexException` with the specified error message.
+
+<ParamField path="message" type="String" required>
+  A descriptive error message explaining what went wrong
+</ParamField>
+
+```dart
+throw LocalRegexException('Phone number is not valid!');
+
+throw LocalRegexException('National ID is not valid');
+
+throw LocalRegexException('Phone number length cannot be less than 9');
+```
+
+## Properties
+
+### message
+
+The error message describing the exception.
+
+<ResponseField name="type" type="String">
+  A human-readable description of the error
+</ResponseField>
+
+```dart
+try {
+  final formatted = 'invalid'.formatNumber(
+    formatType: FormatType.regular,
+  );
+} on LocalRegexException catch (e) {
+  print(e.message); // Phone number is not valid!
+}
+```
+
+## Common Exception Messages
+
+The library throws `LocalRegexException` with these common messages:
+
+| Message | Cause | Thrown By |
+|---------|-------|----------|
+| "Phone number is not valid!" | Invalid phone number format | `formatNumber()` |
+| "Phone number length cannot be less than 9" | Phone number too short | Internal formatting functions |
+| "National ID is not valid" | Invalid national ID format | `formatID()` |
+
+## Usage Examples
+
+### Basic Error Handling
+
+```dart
+try {
+  final formatted = userInput.formatNumber(
+    formatType: FormatType.countryCode,
+  );
+  print('Formatted: $formatted');
+} on LocalRegexException catch (e) {
+  print('Error: ${e.message}');
+  // Handle the error appropriately
+}
+```
+
+### Form Validation
+
+```dart
+class PhoneNumberValidator {
+  String? validate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    
+    try {
+      value.formatNumber(formatType: FormatType.regular);
+      return null; // Valid
+    } on LocalRegexException catch (e) {
+      return e.message; // Return error message
+    }
+  }
+}
+
+// In Flutter
+TextFormField(
+  validator: PhoneNumberValidator().validate,
+  decoration: InputDecoration(labelText: 'Phone Number'),
+);
+```
+
+### Multiple Validation Attempts
+
+```dart
+String? formatPhoneNumber(String input) {
+  try {
+    return input.formatNumber(
+      formatType: FormatType.countryCodePlus,
+    );
+  } on LocalRegexException catch (e) {
+    print('Validation failed: ${e.message}');
+    return null;
+  }
+}
+
+// Usage
+final formatted = formatPhoneNumber('1234');
+if (formatted != null) {
+  print('Success: $formatted');
+} else {
+  print('Failed to format phone number');
+}
+```
+
+### ID Formatting with Error Recovery
+
+```dart
+String formatIdSafely(String rawId) {
+  try {
+    return rawId.formatID(formatType: IdFormatType.proper)!;
+  } on LocalRegexException catch (e) {
+    print('ID formatting error: ${e.message}');
+    return rawId; // Return original on error
+  }
+}
+
+// Usage
+final id = formatIdSafely('63123456A53');
+print(id); // 63-123456 A 53
+
+final invalid = formatIdSafely('invalid');
+print(invalid); // invalid (returned as-is)
+```
+
+### Batch Processing with Error Logging
+
+```dart
+class PhoneNumberProcessor {
+  final List<String> errors = [];
+  
+  List<String> formatAll(List<String> phoneNumbers) {
+    final formatted = <String>[];
+    
+    for (final phone in phoneNumbers) {
+      try {
+        final result = phone.formatNumber(
+          formatType: FormatType.countryCode,
+        );
+        if (result != null) {
+          formatted.add(result);
+        }
+      } on LocalRegexException catch (e) {
+        errors.add('$phone: ${e.message}');
+      }
+    }
+    
+    return formatted;
+  }
+}
+
+// Usage
+final processor = PhoneNumberProcessor();
+final numbers = ['0771234567', 'invalid', '0711234567', '1234'];
+final results = processor.formatAll(numbers);
+
+print('Formatted: ${results.length} numbers');
+print('Errors: ${processor.errors.length}');
+for (final error in processor.errors) {
+  print('  - $error');
+}
+```
+
+### API Response Handling
+
+```dart
+class ValidationResult {
+  final bool isValid;
+  final String? value;
+  final String? error;
+  
+  ValidationResult.success(this.value) 
+    : isValid = true, 
+      error = null;
+  
+  ValidationResult.failure(this.error) 
+    : isValid = false, 
+      value = null;
+}
+
+ValidationResult validateAndFormat(String input) {
+  try {
+    final formatted = input.formatNumber(
+      formatType: FormatType.countryCodePlus,
+    );
+    return ValidationResult.success(formatted);
+  } on LocalRegexException catch (e) {
+    return ValidationResult.failure(e.message);
+  }
+}
+
+// Usage
+final result = validateAndFormat(userInput);
+if (result.isValid) {
+  await api.send(phoneNumber: result.value);
+} else {
+  showError(result.error!);
+}
+```
+
+### Custom Exception Handling
+
+```dart
+class FormattingException implements Exception {
+  final String field;
+  final String message;
+  
+  FormattingException(this.field, this.message);
+  
+  @override
+  String toString() => 'Error in $field: $message';
+}
+
+String formatPhoneOrThrow(String phone, String fieldName) {
+  try {
+    final result = phone.formatNumber(
+      formatType: FormatType.countryCode,
+    );
+    if (result == null) {
+      throw FormattingException(fieldName, 'Formatting returned null');
+    }
+    return result;
+  } on LocalRegexException catch (e) {
+    throw FormattingException(fieldName, e.message);
+  }
+}
+
+// Usage
+try {
+  final phone = formatPhoneOrThrow(userInput, 'contactNumber');
+  await saveToDatabase(phone);
+} on FormattingException catch (e) {
+  print(e); // Error in contactNumber: Phone number is not valid!
+}
+```
+
+### Logging and Monitoring
+
+```dart
+class PhoneFormatter {
+  final Logger logger;
+  
+  PhoneFormatter(this.logger);
+  
+  String? format(String phone, FormatType formatType) {
+    try {
+      final result = phone.formatNumber(formatType: formatType);
+      logger.info('Successfully formatted: $phone');
+      return result;
+    } on LocalRegexException catch (e) {
+      logger.error(
+        'Failed to format phone number',
+        error: e,
+        stackTrace: StackTrace.current,
+        data: {'input': phone, 'message': e.message},
+      );
+      return null;
+    }
+  }
+}
+```
+
+## Best Practices
+
+### Always Handle Exceptions
+
+```dart
+// ❌ BAD: Unhandled exception can crash the app
+final formatted = userInput.formatNumber(
+  formatType: FormatType.regular,
+);
+
+// ✅ GOOD: Proper error handling
+try {
+  final formatted = userInput.formatNumber(
+    formatType: FormatType.regular,
+  );
+  processNumber(formatted);
+} on LocalRegexException catch (e) {
+  showUserFriendlyError(e.message);
+}
+```
+
+### Validate Before Formatting
+
+```dart
+// ✅ BEST: Validate first, then format
+if (LocalRegex.isZimMobile(userInput)) {
+  final formatted = userInput.formatNumber(
+    formatType: FormatType.countryCode,
+  );
+  // No exception will be thrown here
+} else {
+  showError('Please enter a valid Zimbabwean mobile number');
+}
+```
+
+### Provide User-Friendly Messages
+
+```dart
+String getUserFriendlyMessage(LocalRegexException e) {
+  if (e.message.contains('Phone number is not valid')) {
+    return 'Please enter a valid Zimbabwean phone number (e.g., 0771234567)';
+  } else if (e.message.contains('National ID is not valid')) {
+    return 'Please enter a valid national ID (e.g., 63-123456 A 53)';
+  } else if (e.message.contains('length cannot be less than 9')) {
+    return 'Phone number is too short. Please enter a complete number.';
+  }
+  return 'Invalid input: ${e.message}';
+}
+```
+
+<Note>
+  The `LocalRegexException` class implements the `Exception` interface, making it compatible with standard Dart exception handling patterns.
+</Note>

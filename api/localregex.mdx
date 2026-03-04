@@ -1,0 +1,482 @@
+---
+title: LocalRegex class
+description: Core class containing all validation methods for Zimbabwean mobile numbers, VoIP providers, identity documents, and utilities
+---
+
+The `LocalRegex` class provides static methods for validating various types of data, with a focus on Zimbabwean telecommunications and identity documents.
+
+## Mobile Network Validation
+
+Methods for validating mobile phone numbers from major Zimbabwean network providers.
+
+### isEconet()
+
+Checks if the given number is a valid Econet mobile number.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate (supports formats: 0771234567, +263771234567, 263771234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Econet number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isEconet('0771234567')) {
+  print('Valid Econet number');
+}
+
+if (LocalRegex.isEconet('+263771234567')) {
+  print('Valid Econet number with country code');
+}
+```
+
+### isNetone()
+
+Checks if the given number is a valid Netone mobile number.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate (supports formats: 0711234567, +263711234567, 263711234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Netone number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isNetone('0711234567')) {
+  print('Valid Netone number');
+}
+```
+
+### isTelecel()
+
+Checks if the given number is a valid Telecel mobile number.
+
+<ParamField path="value" type="String" required>
+  The phone number to validate (supports formats: 0731234567, +263731234567, 263731234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Telecel number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isTelecel('0731234567')) {
+  print('Valid Telecel number');
+}
+```
+
+### isZimMobile()
+
+Checks if the given number is a valid Zimbabwean mobile number from any major provider (Econet, Netone, or Telecel).
+
+<ParamField path="value" type="String" required>
+  The phone number to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Zimbabwean mobile number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimMobile('0771234567')) {
+  print('Valid Zimbabwean mobile number');
+}
+
+if (LocalRegex.isZimMobile('0711234567')) {
+  print('Valid - checks all providers');
+}
+```
+
+### isZimLandline()
+
+Checks if the given number is a valid Zimbabwean landline number registered under Telone (currently the only landline provider).
+
+<ParamField path="value" type="String" required>
+  The landline number to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Zimbabwean landline number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimLandline('0242123456')) {
+  print('Valid Telone landline');
+}
+```
+
+## VoIP Provider Validation
+
+Methods for validating VoIP numbers from major Zimbabwean providers.
+
+### isAfricom()
+
+Checks if the given number is a valid Africom VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086441234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Africom number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isAfricom('0864412345')) {
+  print('Valid Africom VoIP number');
+}
+```
+
+### isDandemutande()
+
+Checks if the given number is a valid Dandemutande VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086121234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Dandemutande number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isDandemutande('0861212345')) {
+  print('Valid Dandemutande VoIP number');
+}
+```
+
+### isLiquid()
+
+Checks if the given number is a valid Liquid VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086771234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Liquid number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isLiquid('0867712345')) {
+  print('Valid Liquid VoIP number');
+}
+```
+
+### isPowertel()
+
+Checks if the given number is a valid Powertel VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086111234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Powertel number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isPowertel('0861112345')) {
+  print('Valid Powertel VoIP number');
+}
+```
+
+### isTelco()
+
+Checks if the given number is a valid Telco VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086831234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Telco number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isTelco('0868312345')) {
+  print('Valid Telco VoIP number');
+}
+```
+
+### isTelone()
+
+Checks if the given number is a valid Telone VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086881234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Telone VoIP number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isTelone('0868812345')) {
+  print('Valid Telone VoIP number');
+}
+```
+
+### isZarnet()
+
+Checks if the given number is a valid Zarnet VoIP number.
+
+<ParamField path="value" type="String" required>
+  The VoIP number to validate (format: 086221234567)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Zarnet number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZarnet('0862212345')) {
+  print('Valid Zarnet VoIP number');
+}
+```
+
+### isZimVoip()
+
+Checks if the given number is a valid Zimbabwean VoIP number from any major provider.
+
+<ParamField path="voipNumber" type="String" required>
+  The VoIP number to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number is a valid Zimbabwean VoIP number, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimVoip('0868812345')) {
+  print('Valid VoIP number from any provider');
+}
+```
+
+## Identity Document Validation
+
+Methods for validating Zimbabwean identity documents.
+
+### isZimID()
+
+Checks if the given string is a valid Zimbabwean national ID number.
+
+<ParamField path="idNumber" type="String" required>
+  The national ID number to validate (format: 11-123456 A 11)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the ID number is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimID('63-123456 A 53')) {
+  print('Valid national ID');
+}
+
+if (LocalRegex.isZimID('63-123456A53')) {
+  print('Valid - accepts various formats');
+}
+```
+
+### isZimPassport()
+
+Checks if the given string is a valid Zimbabwean passport number.
+
+<ParamField path="passportNumber" type="String" required>
+  The passport number to validate (format: AB123456)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the passport number is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimPassport('FN123456')) {
+  print('Valid passport number');
+}
+```
+
+### isZimNumberPlate()
+
+Checks if the given string is a valid Zimbabwean vehicle number plate.
+
+<ParamField path="numberPlate" type="String" required>
+  The number plate to validate (format: ABC-1234 or ABC 1234)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the number plate is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimNumberPlate('ABC-1234')) {
+  print('Valid number plate');
+}
+
+if (LocalRegex.isZimNumberPlate('ABC 1234')) {
+  print('Valid - accepts space or dash');
+}
+```
+
+### isZimDriversLicence()
+
+Checks if the given string is a valid Zimbabwean driver's licence number.
+
+<ParamField path="licenseNumber" type="String" required>
+  The driver's licence number to validate (format: 12345AB)
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the licence number is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isZimDriversLicence('12345AB')) {
+  print('Valid driver\'s licence');
+}
+```
+
+## General Validation Methods
+
+Utility methods for validating common data types.
+
+### isEmail()
+
+Checks if the given email address is valid.
+
+<ParamField path="value" type="String" required>
+  The email address to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the email is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isEmail('user@example.com')) {
+  print('Valid email address');
+}
+```
+
+### isPassword()
+
+Checks if the given string is a valid password (requires: uppercase, lowercase, digit, special character, minimum 8 characters).
+
+<ParamField path="password" type="String" required>
+  The password to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the password meets requirements, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isPassword('MyPass123!')) {
+  print('Strong password');
+}
+```
+
+### isValidMobile()
+
+Checks if the given string is a valid mobile number (generic validation, not Zimbabwe-specific).
+
+<Note>
+  It is recommended to use `isZimMobile()` instead for Zimbabwean numbers.
+</Note>
+
+<ParamField path="mobileNumber" type="String" required>
+  The mobile number to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the mobile number format is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isValidMobile('+263771234567')) {
+  print('Valid mobile format');
+}
+```
+
+### isUrl()
+
+Checks if the given string is a valid URL.
+
+<ParamField path="url" type="String" required>
+  The URL to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the URL is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isUrl('https://example.com')) {
+  print('Valid URL');
+}
+```
+
+### isDate()
+
+Checks if the given string is a valid date.
+
+<ParamField path="date" type="String" required>
+  The date string to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the date is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isDate('31/12/2023')) {
+  print('Valid date');
+}
+```
+
+### isIpAddress()
+
+Checks if the given string is a valid IP address.
+
+<ParamField path="ipAddress" type="String" required>
+  The IP address to validate
+</ParamField>
+
+<ResponseField name="returns" type="bool">
+  Returns `true` if the IP address is valid, `false` otherwise
+</ResponseField>
+
+```dart
+if (LocalRegex.isIpAddress('192.168.1.1')) {
+  print('Valid IP address');
+}
+```
+
+## Utility Methods
+
+### generatePassword()
+
+Generates a cryptographically secure random password.
+
+<ParamField path="length" type="int" default="12">
+  The length of the password to generate
+</ParamField>
+
+<ResponseField name="returns" type="String">
+  A randomly generated password containing uppercase, lowercase, numbers, and special characters
+</ResponseField>
+
+```dart
+final password = LocalRegex.generatePassword();
+print(password); // e.g., "aB3$xY9!mK2@"
+
+final longPassword = LocalRegex.generatePassword(length: 20);
+print(longPassword); // 20-character password
+```
+
+<Note>
+  The generated password always contains at least one character from each category: lowercase, uppercase, digit, and special character.
+</Note>

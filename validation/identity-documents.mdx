@@ -1,0 +1,313 @@
+---
+title: "Identity Document Validation"
+description: "Validate Zimbabwe identity documents including IDs, passports, driver's licenses, and number plates"
+---
+
+## Overview
+
+LocalRegex provides validation for various Zimbabwe identity documents and vehicle registration numbers. These validators ensure that document numbers match the official formats used in Zimbabwe.
+
+## National ID Validation
+
+### isZimID()
+
+Validates Zimbabwe national ID numbers.
+
+<ParamField path="idNumber" type="String" required>
+  The national ID number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the ID number is valid, `false` otherwise
+
+**Pattern:** `^(\d{2})(-|\s*)(\d{6,7})(\s)*([A-Za-z])(\s)*(\d{2})$`
+
+### Format Structure
+
+Zimbabwe national ID numbers follow this format:
+
+<Steps>
+  <Step title="District Code">
+    2 digits representing the district of registration
+  </Step>
+  
+  <Step title="Separator">
+    A hyphen or space (optional)
+  </Step>
+  
+  <Step title="Registration Number">
+    6-7 digits representing the registration number
+  </Step>
+  
+  <Step title="Check Letter">
+    A single letter (A-Z)
+  </Step>
+  
+  <Step title="Check Digits">
+    2 final digits
+  </Step>
+</Steps>
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Formats
+LocalRegex.isZimID('63-1234567 A 53');  // true
+LocalRegex.isZimID('63-123456 B 12');   // true
+LocalRegex.isZimID('631234567A53');     // true (no separators)
+LocalRegex.isZimID('63 1234567 C 45');  // true (spaces)
+```
+
+```dart Invalid Formats
+LocalRegex.isZimID('123456789');        // false (no district code)
+LocalRegex.isZimID('63-12345 A 53');    // false (too short)
+LocalRegex.isZimID('63-12345678 A 53'); // false (too long)
+LocalRegex.isZimID('63-1234567 53');    // false (missing letter)
+```
+</CodeGroup>
+
+<Note>
+  The validator accepts IDs with or without separators (hyphens and spaces). Whitespace is cleaned automatically during validation.
+</Note>
+
+---
+
+## Passport Validation
+
+### isZimPassport()
+
+Validates Zimbabwe passport numbers.
+
+<ParamField path="passportNumber" type="String" required>
+  The passport number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the passport number is valid, `false` otherwise
+
+**Pattern:** `^[A-Z]{2}\d{6}$`
+
+### Format Structure
+
+Zimbabwe passports consist of:
+- **2 uppercase letters** followed by
+- **6 digits**
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Passports
+LocalRegex.isZimPassport('AB123456');  // true
+LocalRegex.isZimPassport('CD789012');  // true
+LocalRegex.isZimPassport('XY999999');  // true
+```
+
+```dart Invalid Passports
+LocalRegex.isZimPassport('ab123456');  // false (lowercase)
+LocalRegex.isZimPassport('A1234567');  // false (only 1 letter)
+LocalRegex.isZimPassport('ABC12345');  // false (3 letters)
+LocalRegex.isZimPassport('AB12345');   // false (only 5 digits)
+```
+</CodeGroup>
+
+<Warning>
+  Passport numbers must be in uppercase. The validator expects exactly 2 letters followed by 6 digits.
+</Warning>
+
+---
+
+## Driver's License Validation
+
+### isZimDriversLicence()
+
+Validates Zimbabwe driver's license numbers.
+
+<ParamField path="licenseNumber" type="String" required>
+  The driver's license number to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the license number is valid, `false` otherwise
+
+**Pattern:** `\d{5}[a-zA-Z]{2}`
+
+### Format Structure
+
+Zimbabwe driver's licenses consist of:
+- **5 digits** followed by
+- **2 letters** (uppercase or lowercase)
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Licenses
+LocalRegex.isZimDriversLicence('12345AB');  // true
+LocalRegex.isZimDriversLicence('98765cd');  // true
+LocalRegex.isZimDriversLicence('54321Xy');  // true
+```
+
+```dart Invalid Licenses
+LocalRegex.isZimDriversLicence('1234AB');   // false (only 4 digits)
+LocalRegex.isZimDriversLicence('123456AB'); // false (6 digits)
+LocalRegex.isZimDriversLicence('12345A');   // false (only 1 letter)
+LocalRegex.isZimDriversLicence('12345ABC'); // false (3 letters)
+```
+</CodeGroup>
+
+---
+
+## Vehicle Number Plate Validation
+
+### isZimNumberPlate()
+
+Validates Zimbabwe vehicle registration number plates.
+
+<ParamField path="numberPlate" type="String" required>
+  The number plate to validate
+</ParamField>
+
+**Returns:** `bool` - `true` if the number plate is valid, `false` otherwise
+
+**Pattern:** `^[A-Z]{3}(-|\s*)\d{4}$`
+
+### Format Structure
+
+Zimbabwe number plates consist of:
+- **3 uppercase letters** followed by
+- **Optional hyphen or space** followed by
+- **4 digits**
+
+### Code Examples
+
+<CodeGroup>
+```dart Valid Number Plates
+LocalRegex.isZimNumberPlate('ABC-1234');  // true
+LocalRegex.isZimNumberPlate('ABC 1234');  // true
+LocalRegex.isZimNumberPlate('ABC1234');   // true (no separator)
+LocalRegex.isZimNumberPlate('XYZ-9999');  // true
+```
+
+```dart Invalid Number Plates
+LocalRegex.isZimNumberPlate('ab-1234');   // false (lowercase)
+LocalRegex.isZimNumberPlate('AB-1234');   // false (only 2 letters)
+LocalRegex.isZimNumberPlate('ABCD-1234'); // false (4 letters)
+LocalRegex.isZimNumberPlate('ABC-123');   // false (only 3 digits)
+```
+</CodeGroup>
+
+<Note>
+  Number plates can be validated with or without separators (hyphens or spaces) between the letters and numbers.
+</Note>
+
+---
+
+## Validation Patterns Summary
+
+<CardGroup cols={2}>
+  <Card title="National ID" icon="id-card">
+    **Format:** `63-1234567 A 53`
+    
+    2 digits + 6-7 digits + letter + 2 digits
+  </Card>
+  
+  <Card title="Passport" icon="passport">
+    **Format:** `AB123456`
+    
+    2 uppercase letters + 6 digits
+  </Card>
+  
+  <Card title="Driver's License" icon="id-card-clip">
+    **Format:** `12345AB`
+    
+    5 digits + 2 letters
+  </Card>
+  
+  <Card title="Number Plate" icon="car">
+    **Format:** `ABC-1234`
+    
+    3 uppercase letters + 4 digits
+  </Card>
+</CardGroup>
+
+---
+
+## Complete Example
+
+```dart
+import 'package:localregex/localregex.dart';
+
+void validateDocuments() {
+  // Validate National ID
+  final nationalId = '63-1234567 A 53';
+  if (LocalRegex.isZimID(nationalId)) {
+    print('Valid Zimbabwe National ID');
+  }
+  
+  // Validate Passport
+  final passport = 'AB123456';
+  if (LocalRegex.isZimPassport(passport)) {
+    print('Valid Zimbabwe Passport');
+  }
+  
+  // Validate Driver's License
+  final license = '12345AB';
+  if (LocalRegex.isZimDriversLicence(license)) {
+    print('Valid Zimbabwe Driver\'s License');
+  }
+  
+  // Validate Number Plate
+  final numberPlate = 'ABC-1234';
+  if (LocalRegex.isZimNumberPlate(numberPlate)) {
+    print('Valid Zimbabwe Number Plate');
+  }
+}
+```
+
+---
+
+## Format Flexibility
+
+<Tabs>
+  <Tab title="Separators">
+    Most validators accept multiple separator formats:
+    - Hyphens: `63-1234567 A 53`
+    - Spaces: `63 1234567 A 53`
+    - No separators: `631234567A53`
+    
+    The library automatically cleans whitespace during validation.
+  </Tab>
+  
+  <Tab title="Case Sensitivity">
+    - **National IDs**: Letters can be uppercase or lowercase
+    - **Passports**: Must be uppercase
+    - **Driver's Licenses**: Can be uppercase or lowercase
+    - **Number Plates**: Must be uppercase
+  </Tab>
+  
+  <Tab title="Strict Validation">
+    All validators enforce:
+    - Exact length requirements
+    - Correct position of letters vs numbers
+    - Valid format structure
+    
+    This ensures only genuine document formats are accepted.
+  </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+<Note>
+  **Input Sanitization**: While the library cleans whitespace automatically, consider normalizing case (uppercase) for passports and number plates before validation.
+</Note>
+
+<Warning>
+  **Not a Security Feature**: These validators only check format correctness. They do not verify if a document is genuine or currently valid with authorities.
+</Warning>
+
+```dart Example: Pre-processing Input
+final userInput = ' ab123456 ';
+final normalized = userInput.trim().toUpperCase();
+
+if (LocalRegex.isZimPassport(normalized)) {
+  print('Valid passport format');
+}
+```
