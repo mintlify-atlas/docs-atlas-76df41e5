@@ -1,0 +1,130 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "LocalRegex",
+  "projectDescription": "Dart library for validating and formatting Zimbabwe-specific patterns including mobile numbers, national IDs, and government documents",
+  "theme": "mint",
+  "primaryColor": "#0175C2",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Validation",
+            "pages": [
+              "validation/mobile-numbers",
+              "validation/identity-documents",
+              "validation/voip-providers",
+              "validation/student-ids",
+              "validation/general"
+            ]
+          },
+          {
+            "group": "Formatting",
+            "pages": [
+              "formatting/phone-numbers",
+              "formatting/national-ids"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "utilities/password-generation",
+              "utilities/error-handling"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core",
+            "pages": [
+              "api/localregex",
+              "api/extensions"
+            ]
+          },
+          {
+            "group": "Types",
+            "pages": [
+              "api/format-type",
+              "api/id-format-type",
+              "api/local-schools",
+              "api/exceptions"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Additional",
+            "pages": [
+              "examples",
+              "migration-guide",
+              "changelog"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Zimbabwe mobile number validation (Econet, Netone, Telecel)",
+    "National identity document validation (IDs, passports, license plates, driver's licenses)",
+    "Phone number formatting with multiple format types (regular, country code, country code plus)",
+    "VoIP provider validation for major Zimbabwean providers",
+    "Student ID validation for tertiary institutions",
+    "General validation utilities (email, URL, password, date, IP address)",
+    "Password generation with customizable length",
+    "Landline number validation for Zimbabwean numbers"
+  ],
+  "publicApiSurface": [
+    "LocalRegex.isEmail()",
+    "LocalRegex.isNetone()",
+    "LocalRegex.isEconet()",
+    "LocalRegex.isTelecel()",
+    "LocalRegex.isZimMobile()",
+    "LocalRegex.isZimLandline()",
+    "LocalRegex.isValidMobile()",
+    "LocalRegex.isZimID()",
+    "LocalRegex.isZimPassport()",
+    "LocalRegex.isZimNumberPlate()",
+    "LocalRegex.isZimDriversLicence()",
+    "LocalRegex.isPassword()",
+    "LocalRegex.isUrl()",
+    "LocalRegex.isDate()",
+    "LocalRegex.isIpAddress()",
+    "LocalRegex.isAfricom()",
+    "LocalRegex.isDandemutande()",
+    "LocalRegex.isLiquid()",
+    "LocalRegex.isPowertel()",
+    "LocalRegex.isTelco()",
+    "LocalRegex.isTelone()",
+    "LocalRegex.isZarnet()",
+    "LocalRegex.isZimVoip()",
+    "LocalRegex.generatePassword()",
+    "String.formatNumber()",
+    "String.formatID()",
+    "LocalSchools.hit.isStudent()",
+    "LocalSchools.telone.isStudent()",
+    "LocalSchools.uz.isStudent()",
+    "LocalSchools.msu.isStudent()",
+    "FormatType enum (regular, countryCode, countryCodePlus)",
+    "IdFormatType enum (proper, noSpace)",
+    "LocalSchools enum (hit, telone, uz, msu)",
+    "LocalRegexException class"
+  ]
+}
